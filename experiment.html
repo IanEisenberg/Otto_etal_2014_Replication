@@ -1,0 +1,96 @@
+<!doctype html>
+<html>
+    <head>
+        <title>My experiment</title>
+		<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+		<script src = "jsPsych-4.0.1/jspsych.js"></script>
+		<script src = "jsPsych-4.0.1/plugins/jspsych-text.js"></script>
+		<script src=  "jsPsych-4.0.1/plugins/jspsych-single-stim.js"></script>
+		<script src = stroop.js></script>
+		<script src = decision_task.js></script>
+		<link href = "jsPsych-4.0.1/css/jspsych.css" rel="stylesheet" type = "text/css"></link>
+    </head>	
+    <body>
+    </body>
+	
+	<script>
+	
+	var welcome_block = {
+        type: 'text',
+        text: "<p>Welcome to the experiment. Press any key to continue.</p>"
+    }
+
+	var inter_block = {
+        type: 'text',
+        text: "<p>Take a break! Press any key when you're ready to continue.</p>"
+    }
+	
+	var stroop_instructions_block = {
+	type: "text",
+	text: "<p>In this experiment, you will see color words appear one at a time.</p>" +
+		  "<p>The words will be colored. For example you might see:" +
+		  "<span class = 'large' style = 'color:blue'>RED BLUE</span></p>" +
+		  "<p> As you can see, the color of the text doesn't have to match the color of the word.<p>" +
+		  "<p> Your task is to press the button corresponding to the <strong> color </strong> of the word.</p>" +
+		  "<p><span class='large' style = 'color:red'>RED WORD</span>: Press the 'J' key</p>" +
+		  "<p><span class='large' style = 'color:blue'>BLUE WORD</span>: Press the 'K' key</p>" +
+		  "<p><span class='large' style = 'color:green'>GREEN WORD</span>: Press the 'L' key</p>"  
+	}
+	
+	
+	var freq_stroop_chunk = {
+		chunk_type: 'while',
+		timeline: [fixation, freq_stroop_stim, intertrial_wait],
+		continue_function: function() {
+			if (freq_shuffle_stims.stimulus.length == 0) { return false;}
+			else { return true;}
+		}
+	}
+	
+	var infreq_stroop_chunk = {
+		chunk_type: 'while',
+		timeline: [fixation, infreq_stroop_stim, intertrial_wait],
+		continue_function: function() {
+			if (infreq_shuffle_stims.stimulus.length == 0) { return false;}
+			else { return true;}
+		}
+	}
+	
+	var decision_chunk = {
+		chunk_type: 'while',
+		timeline: [first_stage, d_intertrial_wait,
+					second_stage, d_intertrial_wait,
+					FB_stage, d_intertrial_wait],
+		continue_function: function() {
+			if (fs_stim_shuffled.stimulus.length == 0) { return false;}
+			else {return true;}
+		}
+	}
+	
+	var decision_before = Math.round(Math.random())
+	
+	var experiment = [];
+	experiment.push(welcome_block);
+	if (decision_before == 1) { experiment.push(decision_chunk)}
+	experiment.push(stroop_instructions_block);
+	if (Math.random() < .5) {
+		experiment.push(freq_stroop_chunk);
+		experiment.push(inter_block);
+		experiment.push(infreq_stroop_chunk);
+	} else {
+		experiment.push(infreq_stroop_chunk);
+		experiment.push(inter_block);
+		experiment.push(freq_stroop_chunk);
+	}
+	if (decision_before == 0) { experiment.push(decision_chunk)}
+
+    jsPsych.init({
+        experiment_structure: experiment,
+		on_finish: function() {
+			jsPsych.data.displayData();
+		}
+    })
+
+	
+	</script>
+</html>
