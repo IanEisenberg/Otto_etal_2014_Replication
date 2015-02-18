@@ -141,7 +141,7 @@
 	
 	var decision_practice = {
 		chunk_type: 'while',
-		timeline: [decision_globaldata, first_stage_chunk, second_stage,
+		timeline: [first_stage_chunk, second_stage,
 					FB_chunk, noFB_chunk],
 		continue_function: function() {
 			if (fs_stim_shuffled.stimulus.length == 0) {change_stims(); return false;}
@@ -151,10 +151,10 @@
 	
 	var decision_chunk1 = {
 		chunk_type: 'while',
-		timeline: [decision_globaldata, first_stage_chunk, second_stage,
+		timeline: [first_stage_chunk, second_stage,
 					FB_chunk, noFB_chunk],
 		continue_function: function() {
-			if (fs_stim_shuffled.stimulus.length == 7) { return false;}
+			if (fs_stim_shuffled.stimulus.length == 134) { return false;}
 			else {return true;}
 		}
 	}
@@ -164,7 +164,7 @@
 		timeline: [first_stage_chunk, second_stage,
 					FB_chunk, noFB_chunk],
 		continue_function: function() {
-			if (fs_stim_shuffled.stimulus.length == 3) { return false;}
+			if (fs_stim_shuffled.stimulus.length == 67) { return false;}
 			else {return true;}
 		}
 	}
@@ -180,14 +180,16 @@
 	}
 	
 	var decision_before = Math.round(Math.random())
-	decision_before = 0
+	decision_before = 1
 	var experiment = [];
 	experiment.push(welcome_text)
 		
 	if (decision_before == 1) {	
 		experiment.push(decision_text)
+		experiment.push(decision_globaldata);
 		experiment.push(decision_practice);
 		experiment.push(decision_begin_text);
+		experiment.push(decision_globaldata);
 		experiment.push(decision_chunk1);
 		experiment.push(inter_block);
 		experiment.push(decision_chunk2);
@@ -222,9 +224,10 @@
         experiment_structure: experiment,
 		on_finish: function() {
 			jsPsych.data.displayData();
+			jsPsych.data.localSave('test_save.csv', 'csv', {subject: 12});
 		}
     })
-
+	
 	
 	</script>
 </html>

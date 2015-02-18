@@ -124,17 +124,15 @@ var FB_on = 1
 var choose_second_stage = function() {
 	var global_trial = jsPsych.progress().current_trial_global
 	var first_stage_trial = jsPsych.data.getData()[global_trial-3]
-	var current_trial = jsPsych.currentChunkID().slice(6,8)
-	if (current_trial[1] == ".") {current_trial = current_trial[0]}
 	var stim_ids = fs_stim_shuffled.id[current_trial]
 	var action = actions.indexOf(first_stage_trial.key_press)
-	var stage = stim_ids[action]
-	if (Math.random() < .001) {var stage = Math.abs(stage-1)}
+	if (Math.random() < .3) {var stage = Math.abs(stage-1)}
 	var stage = stage * 2
 	if (action == -1) {FB_on = 0;
 		return "<div style = text-align:center><p style = font-size:30px>" +
 	 							"Please respond faster </p></div>"}
 	else {FB_on = 1;
+		var stage = stim_ids[action]
 		return second_stage_stim.stimulus[stage + Math.round(Math.random())]}
 }
 
@@ -155,10 +153,10 @@ var get_second_selected = function() {
 // the rewards for one of the two stimuli. Each row is therefore a possible action
 
 
-FB_matrix = []
 var initialize_FB_matrix = function() {
-	FB_matrix = [Math.random()*.5+.25,Math.random()*.5+.25,Math.random()*.5+.25,Math.random()*.5+.25]
+	return [Math.random()*.5+.25,Math.random()*.5+.25,Math.random()*.5+.25,Math.random()*.5+.25]
 }
+var FB_matrix = initialize_FB_matrix()
 
 var update_FB = function() {
 	for (i = 0; i < FB_matrix.length; i++) {
@@ -167,19 +165,20 @@ var update_FB = function() {
 		if (curr_value+step < .75 && curr_value+step > .25) {FB_matrix[i] = curr_value+step}
 		else {FB_matrix[i] = curr_value - step}
 	}
+	console.log(FB_matrix)
 }
 
 var get_feedback = function() {
-	var current_trial = jsPsych.progress().current_trial_global
-	var second_stage_trial = jsPsych.data.getData()[current_trial-3]
+	var global_trial = jsPsych.progress().current_trial_global
+	var second_stage_trial = jsPsych.data.getData()[global_trial-3]
 	var index = second_stage_stim.stimulus.indexOf(second_stage_trial.stimulus)
 	var stim_ids = second_stage_stim.id[index]
 	var action = actions.indexOf(second_stage_trial.key_press)
 	if (action == -1) {return "<div style = text-align:center><p style = font-size:30px>" +
 							 "Please respond faster </p></div>"}
-	else if (Math.random() < FB_matrix[stim_ids[action]-2]) {
+	else if (Math.random() < FB_matrix[stim_ids[action]-2]) {update_FB();
 		return "<img class = 'decision-stim' src = 'images/gold_coin.png'></img>"}
-	else {return "<div style = text-align:center><p style = 'color:red;font-size:60px'>" +
+	else {update_FB(); return "<div style = text-align:center><p style = 'color:red;font-size:60px'>" +
 			"0</p></div>"}
 }
 
@@ -193,22 +192,18 @@ var get_current_trial = function() {
 	return current_trial
 }
 
-var get_FB_matrix = function() {
-	return FB_matrix
-}
-
 var change_stims = function() {
 	if (all_stims == practice_dstims) {
 		all_stims = experiment_stims;
 		current_trial = -1;
-		initialize_FB_matrix();	
-		fs_stim = set_up_first_stage(all_stims,10)[0];
+		FB_matrix = initialize_FB_matrix();	
+		fs_stim = set_up_first_stage(all_stims,200)[0];
 		fs_stim_shuffled = set_up_first_stage(all_stims,10)[1];
 		second_stage_stim = set_up_second_stage(all_stims);
 		condition = "test";
 	} else {all_stims = practice_dstims; 
 		current_trial = -1;
-		initialize_FB_matrix();
+		FB_matrix = initialize_FB_matrix();
 		fs_stim = set_up_first_stage(all_stims,10)[0];
 		fs_stim_shuffled = set_up_first_stage(all_stims,50)[1];
 		second_stage_stim = set_up_second_stage(all_stims);
@@ -229,12 +224,12 @@ var decision_globaldata = {
 	timing_stim: 5,
 	timing_response: 5,
 	data: {
+		type: 'decision_global',
 		actions: actions,
 		stims: all_stims,
 		fs_stim: fs_stim,
 		second_stage_stim: second_stage_stim,
-		initial_FB_matrix: get_FB_matrix,
-		condition: get_condition
+		condition: get_condition()
 	}	
 }
 
@@ -258,9 +253,8 @@ var first_stage = {
 		timing_response: 2000,
 		show_response: true,
 		timing_post_trial: 0,
-		//added one to current trial as the current_trial gets updated after the first stage
-		data: {stage: 'first',
-			   trial: get_current_trial()+1, 
+		trial_count: get_current_trial,
+		data: {type: 'decision_first',
 			   condition: get_condition()}
 }
 
@@ -287,9 +281,8 @@ var second_stage = {
 		timing_stim: 2000,
 		timing_response: 2000,
 		timing_post_trial: 0,
-		data: {stage: 'second',
-			   trial: get_current_trial(),
-			   FB_matrix: get_FB_matrix(),
+		trial_count: get_current_trial,
+		data: {type: 'decision_second',
 			   condition: get_condition()}
 }	
 
@@ -313,10 +306,9 @@ var FB_stage = {
 		timing_response: 500,
 		continue_after_response: false,
 		timing_post_trial: 0,
-		data: {stage: 'FB',
-			   trial: get_current_trial(),
-			   condition: get_condition()},
-		on_finish: update_FB
+		trial_count: get_current_trial,
+		data: {type: 'decision_FB',
+			   condition: get_condition()}
 }	
 
 

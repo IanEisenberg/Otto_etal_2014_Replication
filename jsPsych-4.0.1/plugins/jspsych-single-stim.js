@@ -32,6 +32,7 @@
 				// optional parameters
 				trials[i].is_html = (typeof params.is_html === 'undefined') ? false : params.is_html;
 				trials[i].prompt = (typeof params.prompt === 'undefined') ? "" : params.prompt;
+				trials[i].trial_count = (typeof params.trial_count === 'undefined') ? -1 : params.trial_count;
 			}
 			return trials;
 		};
@@ -85,9 +86,12 @@
 				var trial_data = {
 					"rt": response.rt,
 					"stimulus": trial.a_path,
-					"key_press": response.key
+					"key_press": response.key,
 				};
-
+				if (trial.trial_count != -1) {
+					trial_data.trial_count = trial.trial_count
+				}
+		
 				jsPsych.data.write($.extend({}, trial_data, trial.data));
 
 				// clear the display

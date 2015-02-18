@@ -56,7 +56,7 @@
 		stimuli: next_freq_stim,
 		is_html: true,
 		choices: [37, 40, 39],
-		data: {type: 'frequent'}
+		data: {type: 'stroop_frequent'}
 	}
 	
 	var infreq_stroop_stim = {
@@ -64,7 +64,7 @@
 		stimuli: next_infreq_stim,
 		is_html: true,
 		choices: [37, 40, 39],
-		data: {type: 'infrequent'}
+		data: {type: 'stroop_infrequent'}
 	}
 
 	var practice_stroop_stim = {
@@ -76,6 +76,6 @@
 		'style = "color:red">RED WORD</span>: Press the "&larr;" key, ' + 
 		'<span class="large" style = "color:blue">BLUE WORD</span>: Press the "&darr;" key, ' + 
 		'<span class="large" style = "color:green">GREEN WORD</span>: Press the "&rarr;" key</p></div>',
-		data: {type: 'practice'}
+		data: {type: 'stroop_practice'}
 	}
 	
