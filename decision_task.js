@@ -1,66 +1,3 @@
-var id_array = jsPsych.randomization.repeat([0,1],1)
-
-// Actions for left and right
-var actions = [70, 75]
-
-var fs_stim = [
-	{stimulus: "<img src='stims/blue.png'></img><img src='stims/orange.png'></img>", id: id_array},
-	{stimulus: "<img src='stims/orange.png'></img><img src='stims/blue.png'></img>", id: [Math.abs(id_array[0]-1), Math.abs(id_array[1]-1)]}						
-]
-
-var fs_stim_shuffled = jsPsych.randomization.repeat(fs_stim, [100,100], true);
-	
-var choose_first_stage = function() {
-	return fs_stim_shuffled.stimulus.shift()
-}
-
-// Define second stage elements. Each stage is composed of two stimuli which can appear
-// in either position (left or right), but maintain the same id, defined by the id_array.
-
-var id_array2 = [0, 1, 2, 3]
-
-var ss_stims = jsPsych.randomization.repeat(
-	["<img src='stims/japanese_character1.png'></img>",
-	"<img src='stims/japanese_character2.png'></img>",
-	"<img src='stims/japanese_character3.jpeg'></img>",
-	"<img src='stims/japanese_character4.png'></img>"],1)
-
-var set_up_second_stage = function(stims) {
-
-	var ss_stim_array = [
-		jsPsych.randomization.repeat([stims[0]+stims[1], stims[1]+stims[0]],1),
-		jsPsych.randomization.repeat([stims[2]+stims[3],stims[3]+stims[2]],1)
-	]	
-
-	var second_stage_stim = {
-		stimulus: [ss_stim_array[0][0], ss_stim_array[0][1], ss_stim_array[1][0], ss_stim_array[1][1]],
-		id: [[0,1],[1,0],[2,3],[3,4]]
-	}
-	
-	return second_stage_stim
-}
-
-var second_stage_stim = set_up_second_stage(ss_stims)
-
-var choose_second_stage = function() {
-	var current_trial = jsPsych.progress().current_trial_global
-	var first_stage_trial = jsPsych.data.getData()[current_trial-2]
-	var stim_ids = fs_stim_shuffled.id[jsPsych.currentChunkID().slice(6,9)]
-	var action = actions.indexOf(first_stage_trial.key_press)
-	var stage = stim_ids[action]
-	if (Math.random() < .001) {var stage = Math.abs(stage-1)}
-	var stage = stage * 2
-	if (action == -1) {return "<p> Please respond faster </p>"}
-	else { return second_stage_stim.stimulus[stage + Math.round(Math.random())]}
-}
-	
-// Defines the probability of getting reward. Each array is a 'column vector' and defines
-// the rewards for one of the two stimuli. Each row is therefore a possible action
-
-
-
-var FB_matrix = [Math.random()*.5+.25,Math.random()*.5+.25,Math.random()*.5+.25,Math.random()*.5+.25]
-
 function normal_random(mean, variance) {
   if (mean == undefined)
     mean = 0.0;
@@ -82,6 +19,147 @@ function normal_random(mean, variance) {
   return X;
 }
 
+//************************************
+//Define Stims and startup variables
+//************************************
+
+//The first two stims are first-stage stims.
+//The next four are second-stage
+
+var experiment_stims = jsPsych.randomization.repeat(
+	["'images/11.png'",
+	 "'images/12.png'",
+	 "'images/13.png'",
+	 "'images/14.png'",
+	 "'images/15.png'",
+	 "'images/16.png'",],1)
+
+var practice_dstims = jsPsych.randomization.repeat(
+	["'images/80.png'",
+	 "'images/81.png'",
+	 "'images/82.png'",
+	 "'images/83.png'",
+	 "'images/84.png'",
+	 "'images/85.png'",],1)
+	
+var all_stims = practice_dstims 
+var condition = "practice"
+
+// Actions for left and right
+var actions = [37,39]
+
+
+//************************************
+// Define first stage elements
+//************************************
+
+var set_up_first_stage = function(stims, trials) {
+	var fs_stim = [
+		{stimulus: 
+			"<img class = 'decision-stim left' src=" + all_stims[0] + ">" +
+			"<img class = 'decision-stim right' src=" + all_stims[1] + ">", 
+			id: [0,1]},
+		{stimulus: "<img class = 'decision-stim left' src=" + all_stims[1] + ">"+
+			"<img class = 'decision-stim right' src=" + all_stims[0] + ">", 
+			id: [1,0]}						
+	]
+
+	var fs_stim_shuffled = jsPsych.randomization.repeat(fs_stim, [trials/2,trials/2], true);
+	
+	return [fs_stim, fs_stim_shuffled]
+}
+
+temp = set_up_first_stage(all_stims,2)	
+fs_stim = temp[0]
+fs_stim_shuffled = temp[1]
+	
+var current_trial = -1
+
+var choose_first_stage = function() {
+	current_trial = current_trial + 1
+	return fs_stim_shuffled.stimulus.shift()
+}
+
+var get_first_selected = function() {
+	var global_trial = jsPsych.progress().current_trial_global
+	var first_stage_trial = jsPsych.data.getData()[global_trial-1]
+	var stim_ids = fs_stim_shuffled.id[current_trial]
+	var action = actions.indexOf(first_stage_trial.key_press)
+	if (action == 0) {
+	return "<img class = 'decision-stim left selected' src=" + all_stims[stim_ids[0]] + ">" +
+			"<img class = 'decision-stim right' src=" + all_stims[stim_ids[1]] + ">"
+	} else if (action == 1) {return "<img class = 'decision-stim left' src=" + all_stims[stim_ids[0]] + ">" +
+			"<img class = 'decision-stim right selected' src=" + all_stims[stim_ids[1]] + ">"}
+}
+
+//************************************
+// Define second stage elements. Each stage is composed of two stimuli which can appear
+// in either position (left or right), but maintain the same id, defined by the id_array.
+//************************************
+
+var set_up_second_stage = function(stims) {
+
+	var ss_stim_array = [
+			["<img class = 'decision-stim left' src=" + stims[2]+ "></img>" + 
+			"<img class = 'decision-stim right' src=" + stims[3]+ "></img>", 
+			"<img class = 'decision-stim left' src=" + stims[3]+ "></img>" + 
+			"<img class = 'decision-stim right' src=" + stims[2]+ "></img>"],
+			["<img class = 'decision-stim left' src=" + stims[4]+ "></img>" + 
+			"<img class = 'decision-stim right' src=" + stims[5]+ "></img>", 
+			"<img class = 'decision-stim left' src=" + stims[5]+ "></img>" + 
+			"<img class = 'decision-stim right' src=" + stims[4]+ "></img>"]
+	]	
+
+	var second_stage_stim = {
+		stimulus: [ss_stim_array[0][0], ss_stim_array[0][1], ss_stim_array[1][0], ss_stim_array[1][1]],
+		id: [[2,3],[3,2],[4,5],[5,4]]
+	}
+	
+	return second_stage_stim
+}
+
+var second_stage_stim = set_up_second_stage(all_stims)
+
+var FB_on = 1
+var choose_second_stage = function() {
+	var global_trial = jsPsych.progress().current_trial_global
+	var first_stage_trial = jsPsych.data.getData()[global_trial-3]
+	var current_trial = jsPsych.currentChunkID().slice(6,8)
+	if (current_trial[1] == ".") {current_trial = current_trial[0]}
+	var stim_ids = fs_stim_shuffled.id[current_trial]
+	var action = actions.indexOf(first_stage_trial.key_press)
+	var stage = stim_ids[action]
+	if (Math.random() < .001) {var stage = Math.abs(stage-1)}
+	var stage = stage * 2
+	if (action == -1) {FB_on = 0;
+		return "<div style = text-align:center><p style = font-size:30px>" +
+	 							"Please respond faster </p></div>"}
+	else {FB_on = 1;
+		return second_stage_stim.stimulus[stage + Math.round(Math.random())]}
+}
+
+var get_second_selected = function() {
+	var global_trial = jsPsych.progress().current_trial_global
+	var second_stage_trial = jsPsych.data.getData()[global_trial-1]
+	var stim_index = second_stage_stim.stimulus.indexOf(second_stage_trial.stimulus)
+	var stim_ids = second_stage_stim.id[stim_index]
+	var action = actions.indexOf(second_stage_trial.key_press)
+	if (action == 0) {
+	return "<img class = 'decision-stim left selected' src=" + all_stims[stim_ids[0]] + ">" +
+			"<img class = 'decision-stim right' src=" + all_stims[stim_ids[1]] + ">"
+	} else if (action == 1) {return "<img class = 'decision-stim left' src=" + all_stims[stim_ids[0]] + ">" +
+			"<img class = 'decision-stim right selected' src=" + all_stims[stim_ids[1]] + ">"}
+}
+
+// Defines the probability of getting reward. Each array is a 'column vector' and defines
+// the rewards for one of the two stimuli. Each row is therefore a possible action
+
+
+FB_matrix = []
+var initialize_FB_matrix = function() {
+	FB_matrix = [Math.random()*.5+.25,Math.random()*.5+.25,Math.random()*.5+.25,Math.random()*.5+.25]
+}
+
 var update_FB = function() {
 	for (i = 0; i < FB_matrix.length; i++) {
 		var curr_value = FB_matrix[i]
@@ -89,31 +167,86 @@ var update_FB = function() {
 		if (curr_value+step < .75 && curr_value+step > .25) {FB_matrix[i] = curr_value+step}
 		else {FB_matrix[i] = curr_value - step}
 	}
-	
 }
 
 var get_feedback = function() {
 	var current_trial = jsPsych.progress().current_trial_global
-	var second_stage_trial = jsPsych.data.getData()[current_trial-2]
+	var second_stage_trial = jsPsych.data.getData()[current_trial-3]
 	var index = second_stage_stim.stimulus.indexOf(second_stage_trial.stimulus)
 	var stim_ids = second_stage_stim.id[index]
 	var action = actions.indexOf(second_stage_trial.key_press)
-	if (action == -1) {return "<p> Please respond faster </p>"}
-	else if (Math.random() > FB_matrix[stim_ids[action]]) {return "You've won!"}
-	else {return "You've lost."}
+	if (action == -1) {return "<div style = text-align:center><p style = font-size:30px>" +
+							 "Please respond faster </p></div>"}
+	else if (Math.random() < FB_matrix[stim_ids[action]-2]) {
+		return "<img class = 'decision-stim' src = 'images/gold_coin.png'></img>"}
+	else {return "<div style = text-align:center><p style = 'color:red;font-size:60px'>" +
+			"0</p></div>"}
 }
 
+// Switch from practice to test
 
+var get_condition = function() {
+	return condition
+}
+
+var get_current_trial = function() {
+	return current_trial
+}
+
+var get_FB_matrix = function() {
+	return FB_matrix
+}
+
+var change_stims = function() {
+	if (all_stims == practice_dstims) {
+		all_stims = experiment_stims;
+		current_trial = -1;
+		initialize_FB_matrix();	
+		fs_stim = set_up_first_stage(all_stims,10)[0];
+		fs_stim_shuffled = set_up_first_stage(all_stims,10)[1];
+		second_stage_stim = set_up_second_stage(all_stims);
+		condition = "test";
+	} else {all_stims = practice_dstims; 
+		current_trial = -1;
+		initialize_FB_matrix();
+		fs_stim = set_up_first_stage(all_stims,10)[0];
+		fs_stim_shuffled = set_up_first_stage(all_stims,50)[1];
+		second_stage_stim = set_up_second_stage(all_stims);
+		condition = "practice"}
+}
+
+//************************************
 // Define the stages
+//************************************
+
+//Used to store global variables, not to display any information
+var decision_globaldata = {
+	type: "single-stim",
+	stimuli: "",
+	continue_after_response: false,
+	is_html: true,
+	timing_post_trial: 0,
+	timing_stim: 5,
+	timing_response: 5,
+	data: {
+		actions: actions,
+		stims: all_stims,
+		fs_stim: fs_stim,
+		second_stage_stim: second_stage_stim,
+		initial_FB_matrix: get_FB_matrix,
+		condition: get_condition
+	}	
+}
 
 
 var d_intertrial_wait = {
 	type: "single-stim",
-	stimuli: "<p>waiting</p> ",
+	stimuli: "",
 	continue_after_response: false,
 	is_html: true,
-	timing_stim: 100,
-	timing_response: 100
+	timing_post_trial: 0,
+	timing_stim: 1000,
+	timing_response: 1000
 }
 
 var first_stage = {
@@ -123,7 +256,27 @@ var first_stage = {
 		choices: actions,
 		timing_stim: 2000,
 		timing_response: 2000,
-		data: {stage: 'first'}
+		show_response: true,
+		timing_post_trial: 0,
+		//added one to current trial as the current_trial gets updated after the first stage
+		data: {stage: 'first',
+			   trial: get_current_trial()+1, 
+			   condition: get_condition()}
+}
+
+var first_stage_selected = {
+	type: "single-stim",
+	stimuli: get_first_selected,
+	continue_after_response: false,
+	is_html: true,
+	timing_post_trial: 0,
+	timing_stim: 500,
+	timing_response: 500
+}
+
+var first_stage_chunk = {
+	chunk_type: 'linear',
+	timeline: [first_stage, first_stage_selected, d_intertrial_wait]
 }
 
 var second_stage = {
@@ -133,17 +286,52 @@ var second_stage = {
 		choices: actions,
 		timing_stim: 2000,
 		timing_response: 2000,
-		data: {stage: 'second'}
+		timing_post_trial: 0,
+		data: {stage: 'second',
+			   trial: get_current_trial(),
+			   FB_matrix: get_FB_matrix(),
+			   condition: get_condition()}
 }	
-	
+
+var second_stage_selected = {
+	type: "single-stim",
+	stimuli: get_second_selected,
+	continue_after_response: false,
+	is_html: true,
+	timing_post_trial: 0,
+	timing_stim: 500,
+	timing_response: 500
+}
+
+
 var FB_stage = {
 		type: "single-stim",
 		stimuli: get_feedback,
 		is_html: true,
-		choices: ['F','J'],
+		choices: actions,
 		timing_stim: 500,
 		timing_response: 500,
 		continue_after_response: false,
-		data: {stage: 'FB'},
+		timing_post_trial: 0,
+		data: {stage: 'FB',
+			   trial: get_current_trial(),
+			   condition: get_condition()},
 		on_finish: update_FB
 }	
+
+
+var FB_chunk = {
+	chunk_type: 'if',
+	timeline: [second_stage_selected, d_intertrial_wait, FB_stage, d_intertrial_wait],
+	conditional_function: function() {
+		return FB_on == 1
+	}
+}
+
+var noFB_chunk = {
+	chunk_type: 'if',
+	timeline: [d_intertrial_wait],
+	conditional_function: function() {
+		return FB_on == 0
+	}
+}

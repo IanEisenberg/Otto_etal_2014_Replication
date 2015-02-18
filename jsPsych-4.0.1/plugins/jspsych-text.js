@@ -23,6 +23,7 @@
                 trials[i] = {};
                 trials[i].text = params.text[i]; // text of all trials
                 trials[i].cont_key = params.cont_key || []; // keycode to press to advance screen, default is all keys.
+                trials[i].cont_but = params.cont_btn
             }
             return trials;
         };
@@ -63,7 +64,6 @@
                 after_response({key: 'mouse', rt: rt});
                 
             };
-
             // check if key is 'mouse'
             if (trial.cont_key == 'mouse') {
                 display_element.click(mouse_listener);

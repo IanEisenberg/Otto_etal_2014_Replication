@@ -12,7 +12,6 @@
  *
  */
  
-@import url(//fonts.googleapis.com/css?family=Open+Sans:400italic,700italic,400,700);
 
 html {
  font-family: 'Open Sans', 'Arial', sans-serif;
@@ -248,3 +247,39 @@ button:hover {
  .jspsych-survey-text-question {
      margin: 2em 0em;
  }
+ 
+
+/* Additions to the default css */
+#instructions {
+  text-align: center;
+}
+
+#legal {
+  margin: 0 auto;
+  margin-top: 1.5em;
+  font-size: 0.8em;
+}
+
+.decision-stim {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    height: 250px;
+} 	
+
+.stroop-stim {
+	text-align: center;
+	font-size: 60px;
+}
+ 	
+
+.block-text {
+  width: 500px;
+  text-align: justify;
+  margin: 0 auto;
+  margin-bottom: 1em;
+}
+
+.selected {
+   border:5px solid green
+}

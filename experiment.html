@@ -6,6 +6,7 @@
 		<script src = "jsPsych-4.0.1/jspsych.js"></script>
 		<script src = "jsPsych-4.0.1/plugins/jspsych-text.js"></script>
 		<script src=  "jsPsych-4.0.1/plugins/jspsych-single-stim.js"></script>
+		<script src=  "jsPsych-4.0.1/plugins/jspsych-html.js"></script>
 		<script src = stroop.js></script>
 		<script src = decision_task.js></script>
 		<link href = "jsPsych-4.0.1/css/jspsych.css" rel="stylesheet" type = "text/css"></link>
@@ -15,34 +16,116 @@
 	
 	<script>
 	
-	var welcome_block = {
-        type: 'text',
-        text: "<p>Welcome to the experiment. Press any key to continue.</p>"
-    }
-
-	var inter_block = {
-        type: 'text',
-        text: "<p>Take a break! Press any key when you're ready to continue.</p>"
-    }
+	var welcome_instructions = 
+		'<div id="instructions"><div style="width: 500px; margin: 0 auto; text-align: ' +
+		'center; background-color: #8C1516; padding: 20px 15px 10px 10px">' +
+  	    '<img src="images/stanford.png" height="46" width="360" alt="Stanford University"></div>' +
+		'<p class="block-text">Welcome to the experiment! In this experiment, you will ' +
+		'perform two different cognitive tasks. It is important that you complete both. ' +
+		'If you are ready, press <strong>"Enter"</strong>.	</p>' +
+		'<p class="block-text" id="legal">Legal information: By answering the ' +
+		'following questions, you are participating in a study being performed by ' +
+		'cognitive scientists in the Stanford Department of Psychology. If you have ' +
+		'questions about this research, please contact Ian Eisenberg at <a' +
+		'href="mailto://ieisenbe@stanford.edu">ieisenbe@stanford.edu</a>.' +
+		'You must be  at least 18 years old to participate. Your participation in this ' +
+		'research is voluntary. You may decline further participation, at any time ,' +
+		'without adverse consequences. Your anonymity is assured; the researchers who ' +
+		'have requested your participation will not receive any personal information about you.</p></div>'
 	
-	var stroop_instructions_block = {
-	type: "text",
-	text: "<p>In this experiment, you will see color words appear one at a time.</p>" +
-		  "<p>The words will be colored. For example you might see:" +
-		  "<span class = 'large' style = 'color:blue'>RED BLUE</span></p>" +
-		  "<p> As you can see, the color of the text doesn't have to match the color of the word.<p>" +
-		  "<p> Your task is to press the button corresponding to the <strong> color </strong> of the word.</p>" +
-		  "<p><span class='large' style = 'color:red'>RED WORD</span>: Press the 'J' key</p>" +
-		  "<p><span class='large' style = 'color:blue'>BLUE WORD</span>: Press the 'K' key</p>" +
-		  "<p><span class='large' style = 'color:green'>GREEN WORD</span>: Press the 'L' key</p>"  
+	var decision_instructions = 
+		'<div id="instructions">' +
+  		'<div style="width: 500px; margin: 0 auto; text-align: center;' +
+  		'background-color: #8C1516; padding: 20px 15px 10px 10px">' +
+    	'<img src="images/stanford.png" height="46" width="360" alt="Stanford University"></div>' +
+		'<p class="block-text">In this section, you will be required to make decisions in two ' +
+		'stages to get money. Your aim is to do as well as possible. ' + 
+		'In the first stage, two abstract shapes will come up on the screen. You choose one by ' +
+		'pressing either "&larr;" or "&rarr;". Your choice will be indicated and you will ' +
+		'move to one of two second-stages, each with two different abstract shapes. '+
+		'After you respond in the second-stage by again pressing an arrow key, you will get feedback ' +
+		'(either a gold coin or a "0" indicating whether you won or lost on that trial.) ' +
+		'These gold coins determines your bonus pay, so try to get as many as possible! </p>' +
+		'<p class="block-text">Choosing each of the four second-stage options (two different shapes in ' +
+		'two different stages has a different likelihood of getting a gold coin. The chance ' +
+		'of getting a coin from each of those choices changes over the experiment. Each of the ' +
+		'two first stage choices is primarily associated with one of the two second-stages. ' +
+		'The chance of going to one of the second-stages after choosing a first-stage option stay ' +
+		'fixed throughout the experiment.</p>' +
+		'<p> We will begin with some practice, press <strong>"Enter"</strong> to start.</p>'
+ 
+	
+	var stroop_instructions = 
+		'<div id="instructions"><div style="width: 500px; margin: 0 auto; text-align:' +  
+		'center; background-color: #8C1516; padding: 20px 15px 10px 10px">' +
+		'<img src="images/stanford.png" height="46" width="360" alt="Stanford University"></div>' + 
+		'<p class="block-text">In this section, you will see color words appear one ' + 
+		'at a time. The "ink" of the words also will be colored. For example, you may see: ' + 
+		'<span class = "large" style = "color:blue">RED</span>, ' +  
+		'<span class = "large" style = "color:blue">BLUE</span> or ' +  
+		'<span class = "large" style = "color:red">BLUE</span>. Your task is to press ' + 
+		'the button corresponding to the <strong> color </strong> of the word. There will ' + 
+		'be two blocks of trials. The response keys are listed below: </p>' + 
+		'<p><span class="large" style = "color:red">RED WORD</span>: Press the "&larr;" key</p>' + 
+		'<p><span class="large" style = "color:blue">BLUE WORD</span>: Press the "&darr;" key</p>' + 
+		'<p><span class="large" style = "color:green">GREEN WORD</span>: Press the "&rarr;" key</p>' +  
+		'<p class = "block_text"> We will start with a few practice trials. Instructions will ' +
+		'remain on the screen during practice. To begin press <strong>"Enter"</strong>.	</p>'
+
+
+
+	var welcome_text = {
+		type: 'text',
+		text: welcome_instructions,
+		cont_key: 13
 	}
 	
+	var stroop_text = {
+		type: 'text',
+		text: stroop_instructions,
+		cont_key: 13
+	}
+	
+	var decision_text = {
+		type: 'text',
+		text: decision_instructions,
+		cont_key: 13
+	}
+	
+	var inter_block = {
+        type: 'text',
+        text: "<div id='instructions'><p>Take a break! Press any key when you're ready to continue.</p></div>"
+    }
+    
+    var stroop_begin_text= {
+        type: 'text',
+        text: "<div id='instructions'><p class='block-text'>We'll now start the first block " +
+         "of trials. The instructions will no longer be displayed on the bottom of the " +
+        "screen.</p><p>To begin press <strong>'Enter'</strong>.	</p></div>"
+    }
+    
+     var decision_begin_text= {
+        type: 'text',
+        text: "<div id='instructions'><p>We'll now start the real experiment.</p> " +
+        	"<p>There will be two breaks 1/3 and 2/3 of the way through.</p>" +
+        	"<p>To begin press <strong>'Enter'</strong>.</p></div>",
+		cont_key: 13
+    }
+    
+	var practice_stroop_chunk = {
+		chunk_type: 'while',
+		timeline: [fixation, practice_stroop_stim, intertrial_wait],
+		continue_function: function() {
+			if (practice_stims.stimulus.length == 0) { return false;}
+			else { return true;}
+		}
+	}
 	
 	var freq_stroop_chunk = {
 		chunk_type: 'while',
 		timeline: [fixation, freq_stroop_stim, intertrial_wait],
 		continue_function: function() {
-			if (freq_shuffle_stims.stimulus.length == 0) { return false;}
+			if (freq_shuffled_stims.stimulus.length == 0) { return false;}
 			else { return true;}
 		}
 	}
@@ -51,16 +134,45 @@
 		chunk_type: 'while',
 		timeline: [fixation, infreq_stroop_stim, intertrial_wait],
 		continue_function: function() {
-			if (infreq_shuffle_stims.stimulus.length == 0) { return false;}
+			if (infreq_shuffled_stims.stimulus.length == 0) { return false;}
 			else { return true;}
 		}
 	}
 	
-	var decision_chunk = {
+	var decision_practice = {
 		chunk_type: 'while',
-		timeline: [first_stage, d_intertrial_wait,
-					second_stage, d_intertrial_wait,
-					FB_stage, d_intertrial_wait],
+		timeline: [decision_globaldata, first_stage_chunk, second_stage,
+					FB_chunk, noFB_chunk],
+		continue_function: function() {
+			if (fs_stim_shuffled.stimulus.length == 0) {change_stims(); return false;}
+			else {return true;}
+		}
+	}
+	
+	var decision_chunk1 = {
+		chunk_type: 'while',
+		timeline: [decision_globaldata, first_stage_chunk, second_stage,
+					FB_chunk, noFB_chunk],
+		continue_function: function() {
+			if (fs_stim_shuffled.stimulus.length == 7) { return false;}
+			else {return true;}
+		}
+	}
+	
+	var decision_chunk2 = {
+		chunk_type: 'while',
+		timeline: [first_stage_chunk, second_stage,
+					FB_chunk, noFB_chunk],
+		continue_function: function() {
+			if (fs_stim_shuffled.stimulus.length == 3) { return false;}
+			else {return true;}
+		}
+	}
+	
+	var decision_chunk3 = {
+		chunk_type: 'while',
+		timeline: [first_stage_chunk, second_stage,
+					FB_chunk, noFB_chunk],
 		continue_function: function() {
 			if (fs_stim_shuffled.stimulus.length == 0) { return false;}
 			else {return true;}
@@ -68,11 +180,24 @@
 	}
 	
 	var decision_before = Math.round(Math.random())
-	
+	decision_before = 0
 	var experiment = [];
-	experiment.push(welcome_block);
-	if (decision_before == 1) { experiment.push(decision_chunk)}
-	experiment.push(stroop_instructions_block);
+	experiment.push(welcome_text)
+		
+	if (decision_before == 1) {	
+		experiment.push(decision_text)
+		experiment.push(decision_practice);
+		experiment.push(decision_begin_text);
+		experiment.push(decision_chunk1);
+		experiment.push(inter_block);
+		experiment.push(decision_chunk2);
+		experiment.push(inter_block);
+		experiment.push(decision_chunk3);
+	}
+	
+	experiment.push(stroop_text)
+	experiment.push(practice_stroop_chunk)
+	experiment.push(stroop_begin_text)
 	if (Math.random() < .5) {
 		experiment.push(freq_stroop_chunk);
 		experiment.push(inter_block);
@@ -82,7 +207,16 @@
 		experiment.push(inter_block);
 		experiment.push(freq_stroop_chunk);
 	}
-	if (decision_before == 0) { experiment.push(decision_chunk)}
+	if (decision_before == 0) {
+		experiment.push(decision_text)
+		experiment.push(decision_practice);
+		experiment.push(decision_begin_text);
+		experiment.push(decision_chunk1);
+		experiment.push(inter_block);
+		experiment.push(decision_chunk2);
+		experiment.push(inter_block);
+		experiment.push(decision_chunk3);
+	}
 
     jsPsych.init({
         experiment_structure: experiment,
