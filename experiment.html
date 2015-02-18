@@ -101,7 +101,8 @@
         type: 'text',
         text: "<div id='instructions'><p class='block-text'>We'll now start the first block " +
          "of trials. The instructions will no longer be displayed on the bottom of the " +
-        "screen.</p><p>To begin press <strong>'Enter'</strong>.	</p></div>"
+        "screen.</p><p>To begin press <strong>'Enter'</strong>.	</p></div>",
+		cont_key: 13
     }
     
      var decision_begin_text= {
@@ -154,7 +155,7 @@
 		timeline: [first_stage_chunk, second_stage,
 					FB_chunk, noFB_chunk],
 		continue_function: function() {
-			if (fs_stim_shuffled.stimulus.length == 134) { return false;}
+			if (fs_stim_shuffled.stimulus.length == 3) { return false;}
 			else {return true;}
 		}
 	}
@@ -164,7 +165,7 @@
 		timeline: [first_stage_chunk, second_stage,
 					FB_chunk, noFB_chunk],
 		continue_function: function() {
-			if (fs_stim_shuffled.stimulus.length == 67) { return false;}
+			if (fs_stim_shuffled.stimulus.length == 2) { return false;}
 			else {return true;}
 		}
 	}
@@ -224,7 +225,7 @@
         experiment_structure: experiment,
 		on_finish: function() {
 			jsPsych.data.displayData();
-			jsPsych.data.localSave('test_save.csv', 'csv', {subject: 12});
+			jsPsych.data.localSave('test_save2.json', 'json');
 		}
     })
 	

@@ -33,6 +33,7 @@
 				trials[i].is_html = (typeof params.is_html === 'undefined') ? false : params.is_html;
 				trials[i].prompt = (typeof params.prompt === 'undefined') ? "" : params.prompt;
 				trials[i].trial_count = (typeof params.trial_count === 'undefined') ? -1 : params.trial_count;
+				trials[i].global_params = (typeof params.global_params === 'undefined') ? -1 : params.global_params;
 			}
 			return trials;
 		};
@@ -90,6 +91,10 @@
 				};
 				if (trial.trial_count != -1) {
 					trial_data.trial_count = trial.trial_count
+				}
+				
+				if (trial.global_params != -1) {
+					trial_data.global_params = trial.global_params
 				}
 		
 				jsPsych.data.write($.extend({}, trial_data, trial.data));

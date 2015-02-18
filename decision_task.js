@@ -69,11 +69,12 @@ var set_up_first_stage = function(stims, trials) {
 	return [fs_stim, fs_stim_shuffled]
 }
 
-temp = set_up_first_stage(all_stims,2)	
+temp = set_up_first_stage(all_stims,50)	
 fs_stim = temp[0]
 fs_stim_shuffled = temp[1]
 	
 var current_trial = -1
+var current_choice = -1
 
 var choose_first_stage = function() {
 	current_trial = current_trial + 1
@@ -192,20 +193,34 @@ var get_current_trial = function() {
 	return current_trial
 }
 
+var get_global_params = function() {
+	params = {	
+			actions: actions,
+			stims: all_stims,
+			fs_stim: fs_stim,
+			second_stage_stim: second_stage_stim,
+			condition: condition
+		}
+	return params
+}
+
 var change_stims = function() {
 	if (all_stims == practice_dstims) {
 		all_stims = experiment_stims;
 		current_trial = -1;
 		FB_matrix = initialize_FB_matrix();	
-		fs_stim = set_up_first_stage(all_stims,200)[0];
-		fs_stim_shuffled = set_up_first_stage(all_stims,10)[1];
+		temp = set_up_first_stage(all_stims,200)	
+		fs_stim = temp[0]
+		fs_stim_shuffled = temp[1]
 		second_stage_stim = set_up_second_stage(all_stims);
 		condition = "test";
-	} else {all_stims = practice_dstims; 
+	} else {
+		all_stims = practice_dstims; 
 		current_trial = -1;
 		FB_matrix = initialize_FB_matrix();
-		fs_stim = set_up_first_stage(all_stims,10)[0];
-		fs_stim_shuffled = set_up_first_stage(all_stims,50)[1];
+		temp = set_up_first_stage(all_stims,50)	
+		fs_stim = temp[0]
+		fs_stim_shuffled = temp[1]
 		second_stage_stim = set_up_second_stage(all_stims);
 		condition = "practice"}
 }
@@ -223,13 +238,9 @@ var decision_globaldata = {
 	timing_post_trial: 0,
 	timing_stim: 5,
 	timing_response: 5,
+	global_params: get_global_params,
 	data: {
 		type: 'decision_global',
-		actions: actions,
-		stims: all_stims,
-		fs_stim: fs_stim,
-		second_stage_stim: second_stage_stim,
-		condition: get_condition()
 	}	
 }
 
@@ -254,8 +265,7 @@ var first_stage = {
 		show_response: true,
 		timing_post_trial: 0,
 		trial_count: get_current_trial,
-		data: {type: 'decision_first',
-			   condition: get_condition()}
+		data: {type: 'decision_first'}
 }
 
 var first_stage_selected = {
@@ -282,8 +292,7 @@ var second_stage = {
 		timing_response: 2000,
 		timing_post_trial: 0,
 		trial_count: get_current_trial,
-		data: {type: 'decision_second',
-			   condition: get_condition()}
+		data: {type: 'decision_second'}
 }	
 
 var second_stage_selected = {
@@ -307,8 +316,7 @@ var FB_stage = {
 		continue_after_response: false,
 		timing_post_trial: 0,
 		trial_count: get_current_trial,
-		data: {type: 'decision_FB',
-			   condition: get_condition()}
+		data: {type: 'decision_FB'}
 }	
 
 

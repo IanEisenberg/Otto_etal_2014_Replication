@@ -545,14 +545,14 @@
 			return JSON2CSV(dataObj);
 		};
 
-		module.localSave = function(filename, format, append_data) {
+		//Ian made changes here - removed the append to allow JSON.stringify to work
+		module.localSave = function(filename, format) {
 
 			var data_string;
-
 			if (format == 'JSON' || format == 'json') {
-				data_string = JSON.stringify(flattenData(module.getData(), append_data));
+				data_string = JSON.stringify(module.getData());
 			} else if (format == 'CSV' || format == 'csv') {
-				data_string = module.dataAsCSV(append_data);
+				data_string = module.dataAsCSV();
 			} else {
 				throw new Error('invalid format specified for jsPsych.data.localSave');
 			}
