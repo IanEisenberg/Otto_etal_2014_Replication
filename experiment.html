@@ -9,17 +9,14 @@
 		<script src=  "jsPsych-4.0.1/plugins/jspsych-html.js"></script>
 		<script src = stroop.js></script>
 		<script src = decision_task.js></script>
+		<script src="mmturkey-0.6.js"></script>
 		<link href = "jsPsych-4.0.1/css/jspsych.css" rel="stylesheet" type = "text/css"></link>
     </head>	
     <body>
     </body>
 	
 	<script>
-	var turkInfo = jsPsych.turkInfo();
-
-	if(turkInfo.previewMode && !turkInfo.outsideTurk) {
-  		$('#turkInfo').html('<a href="link_to_experiment.html" target="_blank">Click Here to Start Experiment</a>');
-	}
+	
 
 	
 	var welcome_instructions = 
