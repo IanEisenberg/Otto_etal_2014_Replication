@@ -56,11 +56,11 @@ var actions = [37,39]
 var set_up_first_stage = function(stims, trials) {
 	var fs_stim = [
 		{stimulus: 
-			"<img class = 'decision-stim left' src=" + all_stims[0] + ">" +
-			"<img class = 'decision-stim right' src=" + all_stims[1] + ">", 
+			"<img class = 'decision-stim left' src=" + all_stims[0] + "></img>" +
+			"<img class = 'decision-stim right' src=" + all_stims[1] + "></img>", 
 			id: [0,1]},
-		{stimulus: "<img class = 'decision-stim left' src=" + all_stims[1] + ">"+
-			"<img class = 'decision-stim right' src=" + all_stims[0] + ">", 
+		{stimulus: "<img class = 'decision-stim left' src=" + all_stims[1] + "></img>"+
+			"<img class = 'decision-stim right' src=" + all_stims[0] + "></img>", 
 			id: [1,0]}						
 	]
 
