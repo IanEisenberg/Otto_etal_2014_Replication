@@ -9,7 +9,7 @@ Created on Wed Feb 18 11:52:40 2015
 import json
 import pandas
 import re
-f = open('../Data/test_save2.json')
+f = open('../Data/test_save_full.json')
 data = json.load(f)
 df = pandas.DataFrame(data)
 
@@ -52,7 +52,7 @@ start_index = [decision_trials.index[i] for i in range(practice_start+1,task_sta
 for i in start_index:
     trial_dict = {}
     if decision_trials.key_press[i] != -1:
-        trial_dict['fs_stims'] = (stims.index(decision_trials.stimulus[i][39:52]), stims.index(decision_trials.stimulus[i][-15:-2]))
+        trial_dict['fs_stims'] = (stims.index(decision_trials.stimulus[i][39:52]), stims.index(decision_trials.stimulus[i][-21:-8]))
         trial_dict['fs_choice'] = actions.index(decision_trials.key_press[i])
         trial_dict['fs_RT'] = decision_trials.rt[i]
         trial_dict['ss_stims'] = (stims.index(decision_trials.stimulus[i+1][39:52]), stims.index(decision_trials.stimulus[i+1][-21:-8]))
@@ -83,7 +83,7 @@ start_index = [decision_trials.index[i] for i in range(task_start+1,len(decision
 for i in start_index:
     trial_dict = {}
     if decision_trials.key_press[i] != -1:
-        trial_dict['fs_stims'] = (stims.index(decision_trials.stimulus[i][39:52]), stims.index(decision_trials.stimulus[i][-15:-2]))
+        trial_dict['fs_stims'] = (stims.index(decision_trials.stimulus[i][39:52]), stims.index(decision_trials.stimulus[i][-21:-8]))
         trial_dict['fs_choice'] = actions.index(decision_trials.key_press[i])
         trial_dict['fs_RT'] = decision_trials.rt[i]
         trial_dict['ss_stims'] = (stims.index(decision_trials.stimulus[i+1][39:52]), stims.index(decision_trials.stimulus[i+1][-21:-8]))
@@ -100,4 +100,21 @@ for i in start_index:
         trial_dict['ss_RT'] = -1
         trial_dict['FB'] = -1
     task_trials.append(trial_dict)
-            
+
+decision_df = pandas.DataFrame(task_trials)
+#remove trials where subject didn't respond in one of the two trials
+no_response_trials = np.logical_or(decision_df.fs_stims.isnull(), decision_df.ss_stims.isnull());
+#remove trials without response
+decision_df = decision_df[np.logical_not(no_response_trials)]
+
+#QA - check that the correct second stage came up 70% of the time after the relevant key was pressed
+tmp = [decision_df.ss_stims[i][0] for i in decision_df.index if decision_df.fs_stims[i][int(decision_df.fs_choice[i])]==1]
+sum([tmp[i] == 2 or tmp[i] == 3 for i in tmp])/len(tmp)
+
+
+
+
+
+
+
+

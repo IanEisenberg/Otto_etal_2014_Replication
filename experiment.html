@@ -15,6 +15,12 @@
     </body>
 	
 	<script>
+	var turkInfo = jsPsych.turkInfo();
+
+	if(turkInfo.previewMode && !turkInfo.outsideTurk) {
+  		$('#turkInfo').html('<a href="link_to_experiment.html" target="_blank">Click Here to Start Experiment</a>');
+	}
+
 	
 	var welcome_instructions = 
 		'<div id="instructions"><div style="width: 500px; margin: 0 auto; text-align: ' +
@@ -155,7 +161,7 @@
 		timeline: [first_stage_chunk, second_stage,
 					FB_chunk, noFB_chunk],
 		continue_function: function() {
-			if (fs_stim_shuffled.stimulus.length == 3) { return false;}
+			if (fs_stim_shuffled.stimulus.length == 134) { return false;}
 			else {return true;}
 		}
 	}
@@ -165,7 +171,7 @@
 		timeline: [first_stage_chunk, second_stage,
 					FB_chunk, noFB_chunk],
 		continue_function: function() {
-			if (fs_stim_shuffled.stimulus.length == 2) { return false;}
+			if (fs_stim_shuffled.stimulus.length == 67) { return false;}
 			else {return true;}
 		}
 	}
@@ -224,7 +230,7 @@
         experiment_structure: experiment,
 		on_finish: function() {
 			jsPsych.data.displayData();
-			jsPsych.data.localSave('test_save2.json', 'json');
+			jsPsych.turk.submitToTurk(jsPsych.data.getData())
 		}
     })
 	

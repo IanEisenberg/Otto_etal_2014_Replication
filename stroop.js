@@ -1,15 +1,15 @@
 // Define Stroop Stims and create a random list (with a particular combination of consistent/inconsistent stims
 	
-	var consistent_stim = [{stimulus: '<p class = stroop-stim style = "color:red">RED</p>', key: 'J'},
-						   {stimulus: '<p class = stroop-stim style = "color:blue">BLUE</p>', key: 'K'},
-						   {stimulus: '<p class = stroop-stim style = "color:green">GREEN</p>', key: 'L'}];
+	var consistent_stim = [{stimulus: '<p class = stroop-stim style = "color:red">RED</p>'},
+						   {stimulus: '<p class = stroop-stim style = "color:blue">BLUE</p>'},
+						   {stimulus: '<p class = stroop-stim style = "color:green">GREEN</p>'}];
 							
-	var inconsistent_stim = [{stimulus: '<p class = stroop-stim style = "color:red">BLUE</p>', key: 'J'},
-							{stimulus: '<p class = stroop-stim style = "color:red">GREEN</p>', key: 'J'},
-							{stimulus: '<p class = stroop-stim style = "color:blue">RED</p>', key: 'K'},
-							{stimulus: '<p class = stroop-stim style = "color:blue">GREEN</p>', key: 'K'},
-							{stimulus: '<p class = stroop-stim style = "color:green">RED</p>', key: 'L'},
-							{stimulus: '<p class = stroop-stim style = "color:green">BLUE</p>', key: 'L'}];
+	var inconsistent_stim = [{stimulus: '<p class = stroop-stim style = "color:red">BLUE</p>'},
+							{stimulus: '<p class = stroop-stim style = "color:red">GREEN</p>'},
+							{stimulus: '<p class = stroop-stim style = "color:blue">RED</p>'},
+							{stimulus: '<p class = stroop-stim style = "color:blue">GREEN</p>'},
+							{stimulus: '<p class = stroop-stim style = "color:green">RED</p>'},
+							{stimulus: '<p class = stroop-stim style = "color:green">BLUE</p>'}];
 							
 	var stims = consistent_stim.concat(inconsistent_stim);
 	

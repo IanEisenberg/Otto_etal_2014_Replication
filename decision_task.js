@@ -127,13 +127,13 @@ var choose_second_stage = function() {
 	var first_stage_trial = jsPsych.data.getData()[global_trial-3]
 	var stim_ids = fs_stim_shuffled.id[current_trial]
 	var action = actions.indexOf(first_stage_trial.key_press)
-	if (Math.random() < .3) {var stage = Math.abs(stage-1)}
-	var stage = stage * 2
 	if (action == -1) {FB_on = 0;
 		return "<div style = text-align:center><p style = font-size:30px>" +
 	 							"Please respond faster </p></div>"}
 	else {FB_on = 1;
 		var stage = stim_ids[action]
+		if (Math.random() < .3) {var stage = Math.abs(stage-1)}
+		var stage = stage * 2
 		return second_stage_stim.stimulus[stage + Math.round(Math.random())]}
 }
 
