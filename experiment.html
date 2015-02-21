@@ -161,7 +161,9 @@
 	var submit = {
 		type: 'text',
 		text: "<p>Thanks for participating! You're finished! The HIT will automatically submit.</p>",
-		on_finish: opener.turk.submit(jsPsych.data.getData())
+		on_finish: function() {
+			opener.turk.submit(jsPsych.data.getData())
+			}
 	}
 	
 	var decision_before = Math.round(Math.random())
