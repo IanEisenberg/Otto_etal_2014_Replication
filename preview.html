@@ -17,6 +17,7 @@
 	<script>
 	
 
+	turk.previewMode = (turk.assignmentId == "ASSIGNMENT_ID_NOT_AVAILABLE")
 	
 	var welcome_instructions = 
 		'<div id="instructions"><div style="width: 500px; margin: 0 auto; text-align: ' +
@@ -24,6 +25,7 @@
   	    '<img src="images/stanford.png" height="46" width="360" alt="Stanford University"></div>' +
 		'<p class="block-text">Welcome to the experiment! In this experiment, you will ' +
 		'perform two different cognitive tasks. It is important that you complete both. ' +
+		'When you begin, a new window will open where you should complete the tasks. ' +
 		'If you are ready, press <strong>"Enter"</strong>.	</p>' +
 		'<p class="block-text" id="legal">Legal information: By answering the ' +
 		'following questions, you are participating in a study being performed by ' +
@@ -44,13 +46,17 @@
 	
 	var open_window = {
 		type: 'call-function',
-		func: function(){window.open('experiment.html')}
+		func: function(){
+				window.open('experiment.html')
+			}
 	}
 	
 	
 	var experiment = [];
 	experiment.push(welcome_text)
-	experiment.push(open_window)
+	if (turk.previewMode) {
+		experiment.push(open_window)
+	}
 
     jsPsych.init({
         experiment_structure: experiment

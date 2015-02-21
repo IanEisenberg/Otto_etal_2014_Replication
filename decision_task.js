@@ -47,7 +47,8 @@ var condition = "practice"
 
 // Actions for left and right
 var actions = [37,39]
-
+var practice_trial_num = 2
+var test_trial_num = 2
 
 //************************************
 // Define first stage elements
@@ -69,7 +70,7 @@ var set_up_first_stage = function(stims, trials) {
 	return [fs_stim, fs_stim_shuffled]
 }
 
-temp = set_up_first_stage(all_stims,50)	
+temp = set_up_first_stage(all_stims,practice_trial_num)	
 fs_stim = temp[0]
 fs_stim_shuffled = temp[1]
 	
@@ -209,7 +210,7 @@ var change_stims = function() {
 		all_stims = experiment_stims;
 		current_trial = -1;
 		FB_matrix = initialize_FB_matrix();	
-		temp = set_up_first_stage(all_stims,200)	
+		temp = set_up_first_stage(all_stims,test_trial_num)	
 		fs_stim = temp[0]
 		fs_stim_shuffled = temp[1]
 		second_stage_stim = set_up_second_stage(all_stims);
@@ -218,7 +219,7 @@ var change_stims = function() {
 		all_stims = practice_dstims; 
 		current_trial = -1;
 		FB_matrix = initialize_FB_matrix();
-		temp = set_up_first_stage(all_stims,50)	
+		temp = set_up_first_stage(all_stims,practice_trial_num)	
 		fs_stim = temp[0]
 		fs_stim_shuffled = temp[1]
 		second_stage_stim = set_up_second_stage(all_stims);
