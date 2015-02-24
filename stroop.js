@@ -14,21 +14,18 @@
 	var stims = consistent_stim.concat(inconsistent_stim);
 	
 	var freq_shuffled_stims = jsPsych.randomization.repeat(stims, [8, 8, 8, 16, 16, 16, 16, 16, 16], true);
-	var freq_shuffled_stims = jsPsych.randomization.repeat(stims, [1,0,0,0,0,0,0,0,0,0,0], true);
 
 	var next_freq_stim = function() {
 		return freq_shuffled_stims.stimulus.shift()
 	}
 	
 	var infreq_shuffled_stims = jsPsych.randomization.repeat(stims, [32, 32, 32, 4, 4, 4, 4, 4, 4], true);
-	var infreq_shuffled_stims = jsPsych.randomization.repeat(stims, [1,0,0,0,0,0,0,0,0,0,0], true);
 
 	var next_infreq_stim = function() {
 		return infreq_shuffled_stims.stimulus.shift()
 	}
 	
 	var practice_stims = jsPsych.randomization.repeat(stims, [2,2,1,1,1,2,0,1,0], true);
-	var practice_stims = jsPsych.randomization.repeat(stims, [1,0,0,0,0,0,0,0,0,0,0], true);
 
 	var next_practice_stim = function() {
 		return practice_stims.stimulus.shift()

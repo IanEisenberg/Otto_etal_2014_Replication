@@ -47,8 +47,8 @@ var condition = "practice"
 
 // Actions for left and right
 var actions = [37,39]
-var practice_trial_num = 2
-var test_trial_num = 6
+var practice_trial_num = 20
+var test_trial_num = 200
 
 //************************************
 // Define first stage elements

@@ -9,9 +9,9 @@ Created on Wed Feb 18 11:52:40 2015
 import json
 import pandas
 import re
-f = open('../Data/test_save_full.json')
+f = open('../sandbox-results/3TVSS0C0E1ZHHYVB8MM423MQRQLTW6.json')
 data = json.load(f)
-df = pandas.DataFrame(data)
+df = pandas.DataFrame(data['answer'])
 
 
 #reduced the data set
@@ -108,8 +108,8 @@ no_response_trials = np.logical_or(decision_df.fs_stims.isnull(), decision_df.ss
 decision_df = decision_df[np.logical_not(no_response_trials)]
 
 #QA - check that the correct second stage came up 70% of the time after the relevant key was pressed
-tmp = [decision_df.ss_stims[i][0] for i in decision_df.index if decision_df.fs_stims[i][int(decision_df.fs_choice[i])]==1]
-sum([tmp[i] == 2 or tmp[i] == 3 for i in tmp])/len(tmp)
+#tmp = [decision_df.ss_stims[i][0] for i in decision_df.index if decision_df.fs_stims[i][int(decision_df.fs_choice[i])]==1]
+#sum([tmp[i] == 2 or tmp[i] == 3 for i in tmp])/len(tmp)
 
 
 
