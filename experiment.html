@@ -7,9 +7,9 @@
 		<script src = "jsPsych-4.0.1/plugins/jspsych-text.js"></script>
 		<script src=  "jsPsych-4.0.1/plugins/jspsych-single-stim.js"></script>
 		<script src=  "jsPsych-4.0.1/plugins/jspsych-html.js"></script>
-		<script src = stroop.js></script>
-		<script src = decision_task.js></script>
-		<script src="mmturkey.js"></script>
+		<script src = "javascript/stroop.js"></script>
+		<script src = "javascript/decision_task.js"></script>
+		<script src="javascript/mmturkey.js"></script>
 		<link href = "jsPsych-4.0.1/css/jspsych.css" rel="stylesheet" type = "text/css"></link>
     </head>	
     <body>
@@ -24,19 +24,23 @@
     	'<img src="images/stanford.png" height="46" width="360" alt="Stanford University"></div>' +
 		'<p class="block-text">In this section, you will be required to make decisions in two ' +
 		'stages to get money. ' + 
-		'In the first stage, two abstract shapes will come up on the screen. You choose one by ' +
-		'pressing either "&larr;" or "&rarr;". Your choice will be indicated and you will ' +
-		'move to one of two second-stages, each with two different abstract shapes. Each of the' +
-		'two first stage choices is primarily associated with one of the two second-stages. </p> '+
-		'<p>After you respond in the second-stage by again pressing an arrow key, you will get feedback ' +
+		'In each, two abstract shapes will come up on the screen. You choose one by ' +
+		'pressing either "&larr;" or "&rarr;". Your choice in the first stage will bring you to one ' +
+		'of the two second-stages, each with two different abstract shapes. Each ' +
+		'first-stage choice is primarily associated with one of the two second-stages. ' +
+		'This means that each first-stage choice is more likely to bring you to one of the ' +
+		'two second stages than the other. </p> '+
+		'<p class="block-text">After moving to one of the two second-stages, ' +
+		'you respond by again pressing an arrow key. ' +
+		'After making this second choice you will get feedback ' +
 		'(either a gold coin or a "0" indicating whether you won or lost on that trial.) ' +
-		'These gold coins determines your bonus pay, so try to get as many as possible! </p>' +
-		'<p class="block-text">Each of the four second-stage options (two different stages each ' +
-		'with two different shapes) has a different likelihood of paying a gold coin. The chance ' +
+		'These gold coins determine your bonus pay, so try to get as many as possible! </p>' +
+		'<p class="block-text">There are four second-stage options - two stages with two shapes each. ' +
+		'These four options each have a different likelihood of paying a gold coin. The chance ' +
 		'of getting a coin from each of the second-stage shapes changes over the experiment. ' +
-		'The chance of going to one of the second-stages after choosing a first-stage option stay ' +
+		'In contrast, the chance of going to one of the second-stages after choosing a first-stage option stays ' +
 		'fixed throughout the experiment.</p>' +
-		'<p> We will begin with some practice, press <strong>"Enter"</strong> to start.</p></div>'
+		'<p class="block-text"> We will begin with some practice, press <strong>"Enter"</strong> to start.</p></div>'
  
 	
 	var stroop_instructions = 
@@ -48,11 +52,11 @@
 		'<span class = "large" style = "color:blue">RED</span>, ' +  
 		'<span class = "large" style = "color:blue">BLUE</span> or ' +  
 		'<span class = "large" style = "color:red">BLUE</span>. Your task is to press ' + 
-		'the button corresponding to the <strong> color </strong> of the word. There will ' + 
+		'the button corresponding to the <strong> ink color </strong> of the word. There will ' + 
 		'be two blocks of trials. The response keys are listed below: </p>' + 
-		'<p><span class="large" style = "color:red">RED WORD</span>: Press the "&larr;" key</p>' + 
-		'<p><span class="large" style = "color:blue">BLUE WORD</span>: Press the "&darr;" key</p>' + 
-		'<p><span class="large" style = "color:green">GREEN WORD</span>: Press the "&rarr;" key</p>' +  
+		'<p><span class="large" style = "color:red">COLOR WORD</span>: Press the "&larr;" key</p>' + 
+		'<p><span class="large" style = "color:blue">COLOR WORD</span>: Press the "&darr;" key</p>' + 
+		'<p><span class="large" style = "color:green">COLOR WORD</span>: Press the "&rarr;" key</p>' +  
 		'<p class = "block_text"> We will start with a few practice trials. Instructions will ' +
 		'remain on the screen during practice. To begin press <strong>"Enter"</strong>.	</p>'
 
