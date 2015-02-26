@@ -27,8 +27,28 @@
 	
 	var practice_stims = jsPsych.randomization.repeat(stims, [2,2,1,1,1,2,0,1,0], true);
 
+	var stim_color = 0
 	var next_practice_stim = function() {
-		return "<div class = centerbox>" + practice_stims.stimulus.shift()+ "</div>"
+		var stim = practice_stims.stimulus.shift()
+		stim_color = stim.slice(38,39)
+		return "<div class = centerbox>" + stim + "</div>"
+	}
+	
+	var get_stroop_feedback = function() {
+		var global_trial = jsPsych.progress().current_trial_global
+		var previous_choice = jsPsych.data.getData()[global_trial-1].key_press
+		if (stim_color == 'r') {
+			if (previous_choice == 82) { return "<div class = centerbox><p class = stroop-stim>correct</p></div>"}
+			else {return "<div class = centerbox><p class = stroop-stim>incorrect</p></div>"}
+		}
+		if (stim_color == 'b') {
+			if (previous_choice == 66) { return "<div class = centerbox><p class = stroop-stim>correct</p></div>"}
+			else {return "<div class = centerbox><p class = stroop-stim>incorrect</p></div>"}
+		}
+		if (stim_color == 'g') {
+			if (previous_choice == 71) { return "<div class = centerbox><p class = stroop-stim>correct</p></div>"}
+			else {return "<div class = centerbox><p class = stroop-stim>incorrect</p></div>"}
+		}
 	}
 	
 	var fixation = {
@@ -75,5 +95,15 @@
 		'style = "color:red">R</span> <span class="large"style = "color:blue">B</span> ' +
 		'<span class="large"style = "color:green">G</span></div>',
 		data: {type: 'stroop_practice'}
+	}
+	
+	var practice_fb = {
+		type: "single-stim",
+		stimuli: get_stroop_feedback,
+		is_html: true,
+		timing_stim: 500,
+		timing_response: 500,
+		continue_after_response: false,
+		timing_post_trial: 0
 	}
 	

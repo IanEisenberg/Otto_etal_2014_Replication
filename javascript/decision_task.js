@@ -27,20 +27,20 @@ function normal_random(mean, variance) {
 //The next four are second-stage
 
 var experiment_stims = jsPsych.randomization.repeat(
-	["'images/11.png'",
-	 "'images/12.png'",
-	 "'images/13.png'",
-	 "'images/14.png'",
-	 "'images/15.png'",
-	 "'images/16.png'",],1)
+	["images/11.png",
+	 "images/12.png",
+	 "images/13.png",
+	 "images/14.png",
+	 "images/15.png",
+	 "images/16.png",],1)
 
 var practice_dstims = jsPsych.randomization.repeat(
-	["'images/80.png'",
-	 "'images/81.png'",
-	 "'images/82.png'",
-	 "'images/83.png'",
-	 "'images/84.png'",
-	 "'images/85.png'",],1)
+	["images/80.png",
+	 "images/81.png",
+	 "images/82.png",
+	 "images/83.png",
+	 "images/84.png",
+	 "images/85.png",],1)
 
 var experiment_colors = jsPsych.randomization.repeat(['#98bf21', '#FF9966', '#C2C2FF'],1)
 var practice_colors = jsPsych.randomization.repeat(['#F1B8D4', '#CCFF99', '#E0C2FF'],1)
@@ -50,8 +50,9 @@ var condition = "practice"
 // Actions for left and right
 var actions = [37,39]
 var stim_side = ['decision-left', 'decision-right']
+var stim_move = ['selected-left', 'selected-right']
 var colors = practice_colors
-var practice_trial_num = 20
+var practice_trial_num = 2
 var test_trial_num = 200
 
 
@@ -64,16 +65,16 @@ var test_trial_num = 200
 var set_up_first_stage = function(stims, trials) {
 	var fs_stim = [
 		{stimulus: 
-			"<div class = decision-left><div class = centerbox style='background:" + colors[0] +"; width:370px;height:300px;'></div></div>" +
-			"<div class = decision-right><div class = centerbox style='background:" + colors[0] + "; width:370px;height:300px;'></div></div>" +
-			"<div class = decision-left ><img class = 'decision-stim' src=" + all_stims[0] + "></img></div>" +
-			"<div class = decision-right><img class = 'decision-stim' src=" + all_stims[1] + "></img></div>", 
+			"<div class = decision-left style='background:" + colors[0] +"; width:330px;height:230px;'>" +
+			"<img class = 'decision-stim' src= '" + all_stims[0] + "'></img></div>" +
+			"<div class = decision-right style='background:" + colors[0] +"; width:330px;height:230px;'>" +
+			"<img class = 'decision-stim' src= '" + all_stims[1] + "'></img></div>",
 			id: [0,1]},
 		{stimulus: 
-			"<div class = decision-left><div class = centerbox style='background:" + colors[0] +"; width:370px;height:300px;'></div></div>" +
-			"<div class = decision-right><div class = centerbox style='background:" + colors[0] + "; width:370px;height:300px;'></div></div>" +
-			"<div class = decision-left><img class = 'decision-stim' src=" + all_stims[1] + "></img></div>" +
-			"<div class = decision-right><img class = 'decision-stim' src=" + all_stims[0] + "></img></div>", 
+			"<div class = decision-left style='background:" + colors[0] +"; width:330px;height:230px;'>" +
+			"<img class = 'decision-stim' src= '" + all_stims[1] + "'></img></div>" +
+			"<div class = decision-right style='background:" + colors[0] +"; width:330px;height:230px;'>" +
+			"<img class = 'decision-stim' src= '" + all_stims[0] + "'></img></div>",
 			id: [1,0]}						
 	]
 
@@ -106,24 +107,16 @@ var get_first_selected = function() {
 	if (action != -1) {
 		first_selected = stim_ids[action]
 		first_notselected = stim_ids[1-action]
-		return "<div class = " + stim_side[action] + "><div class = centerbox style='background:" + colors[0] + "; width:370px;height:300px;'></div></div>" +
-			"<div class = " + stim_side[1-action] + "><div class = 'centerbox fade' style='background:" + colors[0] + "; width:370px;height:300px;'></div></div>" +
-			"<div class = " + stim_side[action] + "><img class = 'decision-stim selected' src=" + all_stims[first_selected] + "></div>" +
-			"<div class = " + stim_side[1-action] + "><img class = 'decision-stim  fade' src=" + all_stims[first_notselected] + "></div>"
+		return "<div class = 'selected " + stim_side[action] + "' style='background:" + colors[0] + "; width:330px;height:230px;'>" +
+				"<img class = 'decision-stim' src= '" + all_stims[first_selected] + "'></div>" +
+			"<div class = '" + stim_side[1-action] + " fade' style='background:" + colors[0] + "; width:330px;height:230px;'>" +
+			"<img class = 'decision-stim  fade' src= '" + all_stims[first_notselected] + "'></div>"
 	} else {
 		first_selected = -1
 		first_notselected = -1
 	}
 }
 
-var get_first_top = function() {
-	if (action != -1) {
-		return "<div class = 'decision-top-background topfade' style='background:" + colors[0] +"; width:370px;height:300px;'></div>" +
-			"<div class = " + stim_side[1-action] + "><div class = 'centerbox faded' style='background:" + colors[0] +"; width:370px;height:300px;'></div></div>" +
-			"<div class = 'decision-top topfade'><img class = 'decision-stim selected' src=" + all_stims[first_selected] + "></div>" +
-			"<div class = " + stim_side[1-action] + "><img class = 'decision-stim  faded' src=" + all_stims[first_notselected] + "></div>"
-	}
-}
 
 
 //************************************
@@ -134,22 +127,22 @@ var get_first_top = function() {
 var set_up_second_stage = function(stims) {
 
 	var ss_stim_array = [
-			["<div class = decision-left><div class = centerbox style='background:" + colors[1] +"; width:370px;height:300px;'></div></div>" +
-			"<div class = decision-right><div class = centerbox style='background:" + colors[1]+"; width:370px;height:300px;'></div></div>" +
-			"<div class = decision-left><img class = 'decision-stim' src=" + stims[2]+ "></img></div>" + 
-			"<div class = decision-right><img class = 'decision-stim' src=" + stims[3]+ "></img></div>",
-			"<div class = decision-left><div class = centerbox style='background:" + colors[1]+"; width:370px;height:300px;'></div></div>" +
-			"<div class = decision-right><div class = centerbox style='background:" + colors[1]+"; width:370px;height:300px;'></div></div>" + 
-			"<div class = decision-left><img class = 'decision-stim' src=" + stims[3]+ "></img></div>" + 
-			"<div class = decision-right><img class = 'decision-stim' src=" + stims[2]+ "></img></div>"],
-			["<div class = decision-left><div class = centerbox style='background:" + colors[2]+"; width:370px;height:300px;'></div></div>" +
-			"<div class = decision-right><div class = centerbox style='background:" + colors[2]+"; width:370px;height:300px;'></div></div>" +
-			"<div class = decision-left><img class = 'decision-stim' src=" + stims[4]+ "></img></div>" + 
-			"<div class = decision-right><img class = 'decision-stim' src=" + stims[5]+ "></img></div>", 
-			"<div class = decision-left><div class = centerbox style='background:" + colors[2]+"; width:370px;height:300px;'></div></div>" +
-			"<div class = decision-right><div class = centerbox style='background:" + colors[2]+"; width:370px;height:300px;'></div></div>" +
-			"<div class = decision-left><img class = 'decision-stim' src=" + stims[5]+ "></img></div>" + 
-			"<div class = decision-right><img class = 'decision-stim' src=" + stims[4]+ "></img></div>"]
+			["<div class = decision-left style='background:" + colors[1] +"; width:330px;height:230px;'>" +
+			"<img class = 'decision-stim' src= '" + stims[2]+ "'></img></div>" + 
+			"<div class = decision-right style='background:" + colors[1] +"; width:330px;height:230px;'>" +
+			"<img class = 'decision-stim' src= '" + stims[3]+ "'></img></div>",
+			"<div class = decision-left style='background:" + colors[1] +"; width:330px;height:230px;'>" +
+			"<img class = 'decision-stim' src= '" + stims[3]+ "'></img></div>" + 
+			"<div class = decision-right style='background:" + colors[1] +"; width:330px;height:230px;'>" +
+			"<img class = 'decision-stim' src= '" + stims[2]+ "'></img></div>"],
+			["<div class = decision-left style='background:" + colors[2] +"; width:330px;height:230px;'>" +
+			"<img class = 'decision-stim' src= '" + stims[4]+ "'></img></div>" + 
+			"<div class = decision-right style='background:" + colors[2] +"; width:330px;height:230px;'>" +
+			"<img class = 'decision-stim' src= '" + stims[5]+ "'></img></div>",
+			"<div class = decision-left style='background:" + colors[2] +"; width:330px;height:230px;'>" +
+			"<img class = 'decision-stim' src= '" + stims[5]+ "'></img></div>" + 
+			"<div class = decision-right style='background:" + colors[2] +"; width:330px;height:230px;'>" +
+			"<img class = 'decision-stim' src= '" + stims[4]+ "'></img></div>"]
 	]	
 
 	var second_stage_stim = {
@@ -177,8 +170,8 @@ var choose_second_stage = function() {
 		stage = stim_ids[action]
 		if (Math.random() < .3) {stage = 1-stage}
 		stage_tmp = stage * 2
-		return "<div class = 'decision-top-background faded' style='background:" + colors[0] +"; width:370px;height:300px;'></div>" +
-			"<div class = decision-top><img class = 'decision-stim faded' src=" + all_stims[first_selected] + "></div>" + 
+		return "<div class = 'decision-top-background' style='background:" + colors[0] +"; width:330px;height:230px;'>" +
+			"<img class = 'decision-stim faded' src= '" + all_stims[first_selected] + "'></div>" + 
 			second_stage_stim.stimulus[stage_tmp + Math.round(Math.random())]}
 }
 
@@ -188,30 +181,22 @@ var second_notselected = -1
 var get_second_selected = function() {
 	var global_trial = jsPsych.progress().current_trial_global
 	var second_stage_trial = jsPsych.data.getData()[global_trial-1]
-	var stim_index = second_stage_stim.stimulus.indexOf(second_stage_trial.stimulus.slice(192,800))
+	var stim_index = second_stage_stim.stimulus.indexOf(second_stage_trial.stimulus.slice(155,500))
 	var stim_ids = second_stage_stim.id[stim_index]
 	action = actions.indexOf(second_stage_trial.key_press)
 	if (action != -1) {
 		second_selected = stim_ids[action]
 		second_notselected = stim_ids[1-action]
-		return "<div class = "  + stim_side[action] + "><div class = centerbox style='background:" + colors[stage+1] +"; width:370px;height:300px;'></div></div>" +
-			"<div class = "  + stim_side[1-action] + "><div class = 'centerbox fade' style='background:" + colors[stage+1]+"; width:370px;height:300px;'></div></div>" +
-			"<div class = " + stim_side[action] + "><img class = 'decision-stim selected' src=" + all_stims[second_selected] + "></div>" +
-			"<div class = " + stim_side[1-action] + "><img class = 'decision-stim  fade' src=" + all_stims[second_notselected] + "></div>"
+		return "<div class = '"  + stim_side[action] + " selected' style='background:" + colors[stage+1] +"; width:330px;height:230px;'>" +
+				"<img class = 'decision-stim' src= '" + all_stims[second_selected] + "'></div>" +
+				"<div class = 'fade "  + stim_side[1-action] + "' style='background:" + colors[stage+1] +"; width:330px;height:230px;'>" +
+				"<img class = 'decision-stim' src= '" + all_stims[second_notselected] + "'></div>"
 	} else {
 		second_selected = -1
 		second_notselected = -1
 	}
 }
 
-var get_second_top = function() {
-	if (action != -1) {
-		return "<div class = decision-top-background topfade style='background:" + colors[stage+1] +"; width:370px;height:300px;'></div>" +
-			"<div class ="  + stim_side[1-action] + "><div class = 'centerbox faded' style='background:" + colors[stage+1]+"; width:370px;height:300px;'></div></div>" +
-			"<div class = 'decision-top topfade'><img class = 'decision-stim selected' src=" + all_stims[second_selected] + "></div>" +
-			"<div class = " + stim_side[1-action] + "><img class = 'decision-stim  faded' src=" + all_stims[second_notselected] + "></div>"
-	}
-}
 
 // Defines the probability of getting reward. Each array is a 'column vector' and defines
 // the rewards for one of the two stimuli. Each row is therefore a possible action
@@ -232,23 +217,21 @@ var update_FB = function() {
 }
 
 var get_feedback = function() {
-	var global_trial = jsPsych.progress().current_trial_global
-	var second_stage_trial = jsPsych.data.getData()[global_trial-3]
-	var index = second_stage_stim.stimulus.indexOf(second_stage_trial.stimulus.slice(192,800))
+	var index = stage*2+action
 	var stim_ids = second_stage_stim.id[index]
 	if (action == -1) {return "<div class = centerbox style = text-align:center><p style = font-size:30px>" +
-							 "Please respond faster </p></div>"}
+	 							"Please respond faster </p></div>"}
 	else if (Math.random() < FB_matrix[stim_ids[action]-2]) {
 		update_FB();
-		return "<div class = 'decision-top-background faded' style='background:" + colors[stage+1] +"; width:370px;height:300px;'></div>" +
-			"<div class = decision-top><img class = 'decision-stim faded' src=" + all_stims[second_selected] + "></div>" +
-			"<div class = centerbox><img class = 'decision-stim' src = 'images/gold_coin.png'></img></div>"
+		return "<div class = 'decision-top-background' style='background:" + colors[stage+1] +"; width:330px;height:230px;'>" +
+			"<img class = 'decision-stim faded' src= '" + all_stims[second_selected] + "'></div>" +
+			"<div><img  class = decision-fb src = 'images/gold_coin.png'></img></div>"
 	}
 	else {
 		update_FB(); 
-		return "<div class = 'decision-top-background faded' style='background:" + colors[stage+1] +"; width:370px;height:300px;'></div>" +
-		"<div class = decision-top><img class = 'decision-stim faded' src=" + all_stims[second_selected] + "></div>" +
-			"<div class = centerbox style = text-align:center><p style = 'color:red;font-size:60px'>0</p></div>"
+		return "<div class = 'decision-top-background' style='background:" + colors[stage+1] +"; width:330px;height:230px;'>" +
+		"<img class = 'decision-stim faded' src= '" + all_stims[second_selected] + "'></div>" +
+			"<div style = text-align:center><p class = decision-fb style = 'color:red;font-size:60px'>0</p></div>"
 	}
 }
 
@@ -345,23 +328,13 @@ var first_stage_selected = {
 	continue_after_response: false,
 	is_html: true,
 	timing_post_trial: 0,
-	timing_stim: 500,
-	timing_response: 500
-}
-
-var first_stage_top = {
-	type: "single-stim",
-	stimuli: get_first_top,
-	continue_after_response: false,
-	is_html: true,
-	timing_post_trial: 0,
-	timing_stim: 500,
-	timing_response: 500
+	timing_stim: 1000,
+	timing_response: 1000
 }
 
 var first_stage_chunk = {
 	chunk_type: 'linear',
-	timeline: [first_stage, first_stage_selected, first_stage_top]
+	timeline: [first_stage, first_stage_selected]
 }
 
 var second_stage = {
@@ -382,20 +355,9 @@ var second_stage_selected = {
 	continue_after_response: false,
 	is_html: true,
 	timing_post_trial: 0,
-	timing_stim: 500,
-	timing_response: 500
+	timing_stim: 1000,
+	timing_response: 1000
 }
-
-var second_stage_top = {
-	type: "single-stim",
-	stimuli: get_second_top,
-	continue_after_response: false,
-	is_html: true,
-	timing_post_trial: 0,
-	timing_stim: 500,
-	timing_response: 500
-}
-
 
 var FB_stage = {
 		type: "single-stim",
@@ -413,7 +375,7 @@ var FB_stage = {
 
 var FB_chunk = {
 	chunk_type: 'if',
-	timeline: [second_stage_selected, second_stage_top, FB_stage, d_intertrial_wait],
+	timeline: [second_stage_selected, FB_stage, d_intertrial_wait],
 	conditional_function: function() {
 		return FB_on == 1
 	}

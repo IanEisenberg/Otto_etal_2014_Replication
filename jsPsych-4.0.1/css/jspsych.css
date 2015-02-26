@@ -265,10 +265,13 @@ button:hover {
 
 .decision-stim {
     display: block;
-    margin-left: auto;
-    margin-right: auto;
-    height: 250px;
+    height: 200px;
+	position:absolute;
+	top:50%;
+	left:50%;
+	transform: translate(-50%,-50%);
 } 	
+
 
 .stroop-stim {
 	text-align: center;
@@ -283,18 +286,26 @@ button:hover {
   margin-bottom: 1em;
 }
 
-.selected {
-}
-
 /* Chrome, Safari, Opera */
-@-webkit-keyframes fade {
-    100% {opacity: .4;}
+
+@-webkit-keyframes movetop {
+    80% {opacity:1;}
+	100% {opacity:.4; transform: translate(-50%, -130%);}
 }
 
-@-webkit-keyframes topfade {
-	80% {opacity: 1;}
-    100% {opacity: .4;}
+.selected{
+	-webkit-animation: movetop 1s;
+	animation: movetop 1s;
+	border-style: dotted;
+    border-color: red;
 }
+
+
+@-webkit-keyframes fade {
+	50% {opacity: 1;}
+    100% {opacity: 0;}
+}
+
 
 .faded {
 	opacity: .4;
@@ -302,13 +313,8 @@ button:hover {
 }
 
 .fade {
-	-webkit-animation: fade .5s;
-	animation: fade .5s;
-}
-
-.multi-parent {
-    position:relative;
-    text-align:center;
+	-webkit-animation: fade 1s;
+	animation: fade 1s;
 }
 
 .centerbox {
@@ -330,37 +336,22 @@ button:hover {
 }
 
 .decision-left {
-    width:500px;
+    width:330px;
   position:absolute;
   top:50%;
   left:50%;
   margin-right:-50%;
-  transform: translate(-100%,-50%);
+  transform: translate(-125%,-25%);
 }
 
 .decision-right {
-    width:500px;
+    width:330px;
   position:absolute;
   top:50%;
   left:50%;
   margin-right:-50%;
-  transform: translate(0%,-50%);
+  transform: translate(25%,-25%);
 }
-
-.topfade {
-	-webkit-animation: topfade .5s;
-	animation: topfade .5s;
-}
-
-.decision-top {
-    width:500px;
-  position:absolute;
-  top:50%;
-  left:50%;
-  margin-right:-50%;
-  transform: translate(-50%,-175%);
-}
-
 
 .decision-top-background {
     width:500px;
@@ -368,10 +359,17 @@ button:hover {
   top:50%;
   left:50%;
   margin-right:-50%;
-  transform: translate(-50%,-155%);
+  transform: translate(-50%,-130%);
 }
 
-
+.decision-fb {
+    width:200px;
+  position:absolute;
+  top:50%;
+  left:50%;
+  margin-right:-50%;
+  transform: translate(-50%,-25%);
+}
 
 
 

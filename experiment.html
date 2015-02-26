@@ -47,7 +47,7 @@
 		'<div class="instructions"><div style="width: 500px; margin: 0 auto; text-align:' +  
 		'center; background-color: #8C1516; padding: 20px 15px 10px 10px">' +
 		'<img src="images/stanford.png" height="46" width="360" alt="Stanford University"></div>' + 
-		'<p class="block-text">In this section, you wiell see color words appear one ' + 
+		'<p class="block-text">In this section, you will see color words appear one ' + 
 		'at a time. The "ink" of the words also will be colored. For example, you may see: ' + 
 		'<span class = "large" style = "color:blue">RED</span>, ' +  
 		'<span class = "large" style = "color:blue">BLUE</span> or ' +  
@@ -97,7 +97,7 @@
     
 	var practice_stroop_chunk = {
 		chunk_type: 'while',
-		timeline: [fixation, practice_stroop_stim, intertrial_wait],
+		timeline: [fixation, practice_stroop_stim, practice_fb, intertrial_wait],
 		continue_function: function() {
 			if (practice_stims.stimulus.length == 0) { return false;}
 			else { return true;}
@@ -172,7 +172,7 @@
 	
 	var decision_before = Math.round(Math.random())
 	var experiment = [];
-	decision_before = 1
+	decision_before = 0
 		
 	if (decision_before == 1) {	
 		experiment.push(decision_text)
@@ -210,11 +210,14 @@
 		experiment.push(decision_chunk3);
 	}
 	experiment.push(submit);
-
-    jsPsych.init({
-        experiment_structure: experiment,
-        show_progress_bar: true
-    })
+	
+	jsPsych.preloadImages([experiment_stims, practice_dstims], function() {startExperiment();});
+	function startExperiment(){
+		jsPsych.init({
+			experiment_structure: experiment,
+			show_progress_bar: true
+		});
+	}
 	
 	
 	</script>
