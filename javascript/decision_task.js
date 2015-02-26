@@ -41,14 +41,16 @@ var practice_dstims = jsPsych.randomization.repeat(
 	 "'images/83.png'",
 	 "'images/84.png'",
 	 "'images/85.png'",],1)
-	
+
+var experiment_colors = jsPsych.randomization.repeat(['#98bf21', '#FF9966', '#C2C2FF'],1)
+var practice_colors = jsPsych.randomization.repeat(['#F1B8D4', '#CCFF99', '#E0C2FF'],1)
 var all_stims = practice_dstims 
 var condition = "practice"
 
 // Actions for left and right
 var actions = [37,39]
 var stim_side = ['decision-left', 'decision-right']
-var colors = jsPsych.randomization.repeat(['#98bf21', '#FF9966', '#C2C2FF'],1)
+var colors = practice_colors
 var practice_trial_num = 20
 var test_trial_num = 200
 
@@ -205,7 +207,7 @@ var get_second_selected = function() {
 var get_second_top = function() {
 	if (action != -1) {
 		return "<div class = decision-top-background topfade style='background:" + colors[stage+1] +"; width:370px;height:300px;'></div>" +
-			"<div class ="  + stim_side[1-action] + "><div class = centerbox style='background:" + colors[stage+1]+"; width:370px;height:300px;'></div></div>" +
+			"<div class ="  + stim_side[1-action] + "><div class = 'centerbox faded' style='background:" + colors[stage+1]+"; width:370px;height:300px;'></div></div>" +
 			"<div class = 'decision-top topfade'><img class = 'decision-stim selected' src=" + all_stims[second_selected] + "></div>" +
 			"<div class = " + stim_side[1-action] + "><img class = 'decision-stim  faded' src=" + all_stims[second_notselected] + "></div>"
 	}
@@ -244,7 +246,7 @@ var get_feedback = function() {
 	}
 	else {
 		update_FB(); 
-		return "<div class = decision-top-background faded style='background:" + colors[stage+1] +"; width:370px;height:300px;'></div>" +
+		return "<div class = 'decision-top-background faded' style='background:" + colors[stage+1] +"; width:370px;height:300px;'></div>" +
 		"<div class = decision-top><img class = 'decision-stim faded' src=" + all_stims[second_selected] + "></div>" +
 			"<div class = centerbox style = text-align:center><p style = 'color:red;font-size:60px'>0</p></div>"
 	}
@@ -274,6 +276,7 @@ var get_global_params = function() {
 var change_stims = function() {
 	if (all_stims == practice_dstims) {
 		all_stims = experiment_stims;
+		colors = experiment_colors;
 		current_trial = -1;
 		FB_matrix = initialize_FB_matrix();	
 		temp = set_up_first_stage(all_stims,test_trial_num)	
@@ -283,6 +286,7 @@ var change_stims = function() {
 		condition = "test";
 	} else {
 		all_stims = practice_dstims; 
+		colors = practice_colors;
 		current_trial = -1;
 		FB_matrix = initialize_FB_matrix();
 		temp = set_up_first_stage(all_stims,practice_trial_num)	
