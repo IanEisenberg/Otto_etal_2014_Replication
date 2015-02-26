@@ -240,7 +240,7 @@ var get_feedback = function() {
 							 "Please respond faster </p></div>"}
 	else if (Math.random() < FB_matrix[stim_ids[action]-2]) {
 		update_FB();
-		return "<div class = decision-top-background faded style='background:" + colors[stage+1] +"; width:370px;height:300px;'></div>" +
+		return "<div class = 'decision-top-background faded' style='background:" + colors[stage+1] +"; width:370px;height:300px;'></div>" +
 			"<div class = decision-top><img class = 'decision-stim faded' src=" + all_stims[second_selected] + "></div>" +
 			"<div class = centerbox><img class = 'decision-stim' src = 'images/gold_coin.png'></img></div>"
 	}
