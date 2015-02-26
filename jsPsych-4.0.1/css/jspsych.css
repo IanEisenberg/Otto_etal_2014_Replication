@@ -293,6 +293,11 @@ button:hover {
 	100% {opacity:.4; transform: translate(-50%, -130%);}
 }
 
+@keyframes movetop {
+    80% {opacity:1;}
+	100% {opacity:.4; transform: translate(-50%, -130%);}
+}
+
 .selected{
 	-webkit-animation: movetop 1s;
 	animation: movetop 1s;
@@ -306,6 +311,10 @@ button:hover {
     100% {opacity: 0;}
 }
 
+@keyframes fade {
+	50% {opacity: 1;}
+    100% {opacity: 0;}
+}
 
 .faded {
 	opacity: .4;
