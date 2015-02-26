@@ -24,9 +24,10 @@
     	'<img src="images/stanford.png" height="46" width="360" alt="Stanford University"></div>' +
 		'<p class="block-text">In this section, you will be required to make decisions in two ' +
 		'stages to get money. ' + 
-		'In each, two abstract shapes will come up on the screen. You choose one by ' +
+		'In each, two abstract shapes will come up on the screen on top of colored backgrounds. You choose one by ' +
 		'pressing either "&larr;" or "&rarr;". Your choice in the first stage will bring you to one ' +
-		'of the two second-stages, each with two different abstract shapes. Each ' +
+		'of two second-stages, each with two different abstract shapes and indicated by different ' +
+		'color backgrounds. Each ' +
 		'first-stage choice is primarily associated with one of the two second-stages. ' +
 		'This means that each first-stage choice is more likely to bring you to one of the ' +
 		'two second stages than the other. </p> '+
@@ -37,7 +38,8 @@
 		'These gold coins determine your bonus pay, so try to get as many as possible! </p>' +
 		'<p class="block-text">There are four second-stage options - two stages with two shapes each. ' +
 		'These four options each have a different likelihood of paying a gold coin. The chance ' +
-		'of getting a coin from each of the second-stage shapes changes over the experiment. ' +
+		'of getting a coin from each of the second-stage shapes changes over the experiment ' +
+		'so the best choice early on may not be the best choice later. ' +
 		'In contrast, the chance of going to one of the second-stages after choosing a first-stage option stays ' +
 		'fixed throughout the experiment.</p>' +
 		'<p class="block-text"> We will begin with some practice, press <strong>"Enter"</strong> to start.</p></div>'
@@ -172,7 +174,7 @@
 	
 	var decision_before = Math.round(Math.random())
 	var experiment = [];
-	decision_before = 0
+	decision_before = 1
 		
 	if (decision_before == 1) {	
 		experiment.push(decision_text)

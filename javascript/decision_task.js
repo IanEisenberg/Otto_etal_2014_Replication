@@ -53,7 +53,7 @@ var stim_side = ['decision-left', 'decision-right']
 var stim_move = ['selected-left', 'selected-right']
 var colors = practice_colors
 var practice_trial_num = 2
-var test_trial_num = 200
+var test_trial_num = 6
 
 
 

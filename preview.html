@@ -10,8 +10,10 @@
 		<script src = "javascript/decision_task.js"></script>
 		<script src="javascript/mmturkey.js"></script>
 		<link href = "jsPsych-4.0.1/css/jspsych.css" rel="stylesheet" type = "text/css"></link>
+		
     </head>	
     <body>
+    <div id = intro_page ></div>
     </body>
 	
 	<script>
@@ -24,10 +26,11 @@
 		'center; background-color: #8C1516; padding: 20px 15px 10px 10px">' +
   	    '<img src="images/stanford.png" height="46" width="360" alt="Stanford University"></div>' +
 		'<p class="block-text">Welcome to the experiment! In this experiment you will ' +
-		'perform two different behavioral tasks. It is important that you complete both. ' +
-		'When you begin, a new window will open where you should complete the tasks. ' +
+		'perform two different behavioral tasks. Together, they should take about 30 minutes. ' +
+		'It is important that you complete both!  ' +
+		'When you begin, a new window will open where you complete the tasks. ' +
 		'If you are ready, press the <strong>"Enter"</strong> key.	</p>' +
-		'<p class="block-text" id="legal">Legal information: By answering the ' +
+		'<p class="block-text legal">Legal information: By answering the ' +
 		'following questions, you are participating in a study being performed by ' +
 		'cognitive scientists in the Stanford Department of Psychology. If you have ' +
 		'questions about this research, please contact Ian Eisenberg at <a' +
@@ -36,32 +39,14 @@
 		'research is voluntary. You may decline further participation, at any time, ' +
 		'without adverse consequences. Your anonymity is assured; the researchers who ' +
 		'have requested your participation will not receive any personal information about you.</p></div>'
-
-
-	var welcome_text = {
-		type: 'text',
-		text: welcome_instructions,
-		cont_key: 13
+	document.getElementById("intro_page").innerHTML = welcome_instructions
+	
+	window.onkeypress = function(event) {
+  	 if (event.keyCode == 13 && !turk.previewMode) {
+      window.open('experiment.html')
+   		}
 	}
-	
-	var open_window = {
-		type: 'call-function',
-		func: function(){
-				window.open('experiment.html')
-			}
-	}
-	
-	
-	var experiment = [];
-	experiment.push(welcome_text)
-	if (!turk.previewMode) {
-		experiment.push(open_window)
-	}
-
-    jsPsych.init({
-        experiment_structure: experiment
-    })
-	
+		
 	
 	</script>
 </html>
