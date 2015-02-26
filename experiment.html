@@ -78,22 +78,25 @@
 	
 	var inter_block = {
         type: 'text',
-        text: "<div class='instructions'><p>Take a break! Press any key when you're ready to continue.</p></div>"
+        text: "<div class = centerbox style = text-align:center><div class='instructions'><p> " +
+        	"Take a break! Press any key when you're ready to continue.</p></div></div>"
     }
     
     var stroop_begin_text= {
         type: 'text',
-        text: "<div class='instructions'><p class='block-text'>We'll now start the first block " +
+        text: "<div class = centerbox style = text-align:center><div class='instructions'> " +
+        "<p class='block-text'>We'll now start the first block " +
          "of trials. The instructions will no longer be displayed on the bottom of the " +
-        "screen and you will no longer get feedback.</p><p>To begin press <strong>'Enter'</strong>.	</p></div>",
+        "screen and you will no longer get feedback.</p><p>To begin press <strong>'Enter'</strong>.	</p></div></div>",
 		cont_key: 13
     }
     
      var decision_begin_text= {
         type: 'text',
-        text: "<div class='instructions'><p>We'll now start the real experiment.</p> " +
+        text: "<div class = centerbox style = text-align:center><div class='instructions'>" +
+        	"<p>We'll now start the real experiment.</p> " +
         	"<p>There will be two breaks 1/3 and 2/3 of the way through.</p>" +
-        	"<p>To begin press <strong>'Enter'</strong>.</p></div>",
+        	"<p>To begin press <strong>'Enter'</strong>.</p></div></div",
 		cont_key: 13
     }
     
@@ -166,7 +169,7 @@
 	
 	var submit = {
 		type: 'text',
-		text: "<p>Thanks for participating! You're finished! The HIT will automatically submit.</p>",
+		text: "<div class = centerbox style = text-align:center><p>Thanks for participating! You're finished! The HIT will automatically submit.</p></div>",
 		on_finish: function() {
 			opener.turk.submit(jsPsych.data.getData())
 			}
