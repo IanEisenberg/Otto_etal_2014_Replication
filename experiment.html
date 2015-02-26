@@ -12,13 +12,13 @@
 		<script src="javascript/mmturkey.js"></script>
 		<link href = "jsPsych-4.0.1/css/jspsych.css" rel="stylesheet" type = "text/css"></link>
     </head>	
-    <body>
+    <body >
     </body>
 	
 	<script>
 	
 	var decision_instructions = 
-		'<div id="instructions">' +
+		'<div class="instructions">' +
   		'<div style="width: 600px; margin: 0 auto; text-align: center;' +
   		'background-color: #8C1516; padding: 20px 15px 10px 10px">' +
     	'<img src="images/stanford.png" height="46" width="360" alt="Stanford University"></div>' +
@@ -44,19 +44,19 @@
  
 	
 	var stroop_instructions = 
-		'<div id="instructions"><div style="width: 500px; margin: 0 auto; text-align:' +  
+		'<div class="instructions"><div style="width: 500px; margin: 0 auto; text-align:' +  
 		'center; background-color: #8C1516; padding: 20px 15px 10px 10px">' +
 		'<img src="images/stanford.png" height="46" width="360" alt="Stanford University"></div>' + 
-		'<p class="block-text">In this section, you will see color words appear one ' + 
+		'<p class="block-text">In this section, you wiell see color words appear one ' + 
 		'at a time. The "ink" of the words also will be colored. For example, you may see: ' + 
 		'<span class = "large" style = "color:blue">RED</span>, ' +  
 		'<span class = "large" style = "color:blue">BLUE</span> or ' +  
 		'<span class = "large" style = "color:red">BLUE</span>. Your task is to press ' + 
 		'the button corresponding to the <strong> ink color </strong> of the word. There will ' + 
 		'be two blocks of trials. The response keys are listed below: </p>' + 
-		'<p><span class="large" style = "color:red">COLOR WORD</span>: Press the "&larr;" key</p>' + 
-		'<p><span class="large" style = "color:blue">COLOR WORD</span>: Press the "&darr;" key</p>' + 
-		'<p><span class="large" style = "color:green">COLOR WORD</span>: Press the "&rarr;" key</p>' +  
+		'<p><span class="large" style = "color:red">COLOR WORD</span>: Press the <strong>R</strong> key</p>' + 
+		'<p><span class="large" style = "color:blue">COLOR WORD</span>: Press the <strong>B</strong> key</p>' + 
+		'<p><span class="large" style = "color:green">COLOR WORD</span>: Press the <strong>G</strong> key</p>' +  
 		'<p class = "block_text"> We will start with a few practice trials. Instructions will ' +
 		'remain on the screen during practice. To begin press <strong>"Enter"</strong>.	</p>'
 
@@ -76,12 +76,12 @@
 	
 	var inter_block = {
         type: 'text',
-        text: "<div id='instructions'><p>Take a break! Press any key when you're ready to continue.</p></div>"
+        text: "<div class='instructions'><p>Take a break! Press any key when you're ready to continue.</p></div>"
     }
     
     var stroop_begin_text= {
         type: 'text',
-        text: "<div id='instructions'><p class='block-text'>We'll now start the first block " +
+        text: "<div class='instructions'><p class='block-text'>We'll now start the first block " +
          "of trials. The instructions will no longer be displayed on the bottom of the " +
         "screen.</p><p>To begin press <strong>'Enter'</strong>.	</p></div>",
 		cont_key: 13
@@ -89,7 +89,7 @@
     
      var decision_begin_text= {
         type: 'text',
-        text: "<div id='instructions'><p>We'll now start the real experiment.</p> " +
+        text: "<div class='instructions'><p>We'll now start the real experiment.</p> " +
         	"<p>There will be two breaks 1/3 and 2/3 of the way through.</p>" +
         	"<p>To begin press <strong>'Enter'</strong>.</p></div>",
 		cont_key: 13
@@ -172,6 +172,7 @@
 	
 	var decision_before = Math.round(Math.random())
 	var experiment = [];
+	decision_before = 1
 		
 	if (decision_before == 1) {	
 		experiment.push(decision_text)
@@ -211,7 +212,8 @@
 	experiment.push(submit);
 
     jsPsych.init({
-        experiment_structure: experiment
+        experiment_structure: experiment,
+        show_progress_bar: true
     })
 	
 	

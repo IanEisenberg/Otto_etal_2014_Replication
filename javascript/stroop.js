@@ -16,24 +16,24 @@
 	var freq_shuffled_stims = jsPsych.randomization.repeat(stims, [8, 8, 8, 16, 16, 16, 16, 16, 16], true);
 
 	var next_freq_stim = function() {
-		return freq_shuffled_stims.stimulus.shift()
+		return "<div class = centerbox>" + freq_shuffled_stims.stimulus.shift()+ "</div>"
 	}
 	
 	var infreq_shuffled_stims = jsPsych.randomization.repeat(stims, [32, 32, 32, 4, 4, 4, 4, 4, 4], true);
 
 	var next_infreq_stim = function() {
-		return infreq_shuffled_stims.stimulus.shift()
+		return "<div class = centerbox>" + infreq_shuffled_stims.stimulus.shift() + "</div>"
 	}
 	
 	var practice_stims = jsPsych.randomization.repeat(stims, [2,2,1,1,1,2,0,1,0], true);
 
 	var next_practice_stim = function() {
-		return practice_stims.stimulus.shift()
+		return "<div class = centerbox>" + practice_stims.stimulus.shift()+ "</div>"
 	}
 	
 	var fixation = {
 		type: "single-stim",
-		stimuli: ["<p class = stroop-stim>+</p>"],
+		stimuli: ["<div class = centerbox><p class = 'stroop-stim'>+</p></div>"],
 		is_html: true,
 		continue_after_response: false,
 		timing_stim: 200,
@@ -54,7 +54,7 @@
 		type: "single-stim",
 		stimuli: next_freq_stim,
 		is_html: true,
-		choices: [37, 40, 39],
+		choices: [82, 66, 71],
 		data: {type: 'stroop_frequent'}
 	}
 	
@@ -62,7 +62,7 @@
 		type: "single-stim",
 		stimuli: next_infreq_stim,
 		is_html: true,
-		choices: [37, 40, 39],
+		choices: [82, 66, 71],
 		data: {type: 'stroop_infrequent'}
 	}
 
@@ -70,11 +70,10 @@
 		type: "single-stim",
 		stimuli: next_practice_stim,
 		is_html: true,
-		choices: [37, 40, 39],
-		prompt: '<div style="position: absolute; bottom: 0px;"><p><span class="large"' + 
-		'style = "color:red">RED WORD</span>: Press the "&larr;" key, ' + 
-		'<span class="large" style = "color:blue">BLUE WORD</span>: Press the "&darr;" key, ' + 
-		'<span class="large" style = "color:green">GREEN WORD</span>: Press the "&rarr;" key</p></div>',
+		choices: [82, 66, 71],
+		prompt: '<div class = centerinstructions style = text-align:center><p>Keys: <span class="large"' + 
+		'style = "color:red">R</span> <span class="large"style = "color:blue">B</span> ' +
+		'<span class="large"style = "color:green">G</span></div>',
 		data: {type: 'stroop_practice'}
 	}
 	
