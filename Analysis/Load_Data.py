@@ -9,7 +9,7 @@ Created on Wed Feb 18 11:52:40 2015
 import json
 import pandas
 import re
-f = open('../sandbox-results/3SNLUL3WO4MG6HY14D5CYORCCXUULB.json')
+f = open('../sandbox-results/3BXQMRHWKZX0CZGM4P6RY161C2RUMK.json')
 data = json.load(f)
 df = pandas.DataFrame(data['answer'])
 
@@ -18,7 +18,7 @@ df = pandas.DataFrame(data['answer'])
 df_trials = df[df.type.notnull()]
 
 #Create a stroop dataset
-color_choice = {37: 'red', 40: 'blue', 39: 'green'}
+color_choice = {82: 'red', 66: 'blue', 71: 'green'}
 stroop_trials = [df_trials.type[i][0:6] == 'stroop' for i in df_trials.index]
 stroop_df = df_trials[stroop_trials]
 stroop_df['color_choice'] = [color_choice[key] for key in stroop_df.key_press]
@@ -48,10 +48,12 @@ decision_trials.index = range(len(decision_trials))
 global_params = decision_trials[decision_trials.global_params.notnull()].global_params
 practice_start = global_params.index[0]
 task_start = global_params.index[1]
+probe = re.compile(r".*decision-stim' src= '(images/.*png).*(images/.*png).*")
+
 
 #make practice dataframe
 #get stims
-stims = [img[1:-1] for img in global_params[practice_start]['stims']]
+stims = global_params[practice_start]['stims']
 actions = global_params[practice_start]['actions']
 practice_trials=[]
 
@@ -60,10 +62,10 @@ start_index = [decision_trials.index[i] for i in range(practice_start+1,task_sta
 for i in start_index:
     trial_dict = {}
     if decision_trials.key_press[i] != -1:
-        trial_dict['fs_stims'] = (stims.index(decision_trials.stimulus[i][39:52]), stims.index(decision_trials.stimulus[i][-21:-8]))
+        trial_dict['fs_stims'] = (stims.index(probe.match(decision_trials.stimulus[i]).group(1)), stims.index(probe.match(decision_trials.stimulus[i]).group(2)))
         trial_dict['fs_choice'] = actions.index(decision_trials.key_press[i])
         trial_dict['fs_RT'] = decision_trials.rt[i]
-        trial_dict['ss_stims'] = (stims.index(decision_trials.stimulus[i+1][39:52]), stims.index(decision_trials.stimulus[i+1][-21:-8]))
+        trial_dict['ss_stims'] = (stims.index(probe.match(decision_trials.stimulus[i+1]).group(1)), stims.index(probe.match(decision_trials.stimulus[i+1]).group(2)))
         if decision_trials.key_press[i+1] != -1:
             trial_dict['ss_choice'] = actions.index(decision_trials.key_press[i+1])
             trial_dict['ss_RT'] = decision_trials.rt[i+1]
@@ -84,7 +86,7 @@ for i in start_index:
        
 #make task dataframe
 #get stims
-stims = [img[1:-1] for img in global_params[task_start]['stims']]
+stims = global_params[task_start]['stims']
 actions = global_params[task_start]['actions']
 task_trials=[]
 
@@ -94,10 +96,10 @@ for i in start_index:
     trial_dict = {}
     trial_dict['trial_count'] = decision_trials['trial_count'][i]
     if decision_trials.key_press[i] != -1:
-        trial_dict['fs_stims'] = (stims.index(decision_trials.stimulus[i][39:52]), stims.index(decision_trials.stimulus[i][-21:-8]))
+        trial_dict['fs_stims'] = (stims.index(probe.match(decision_trials.stimulus[i]).group(1)), stims.index(probe.match(decision_trials.stimulus[i]).group(2)))
         trial_dict['fs_choice'] = actions.index(decision_trials.key_press[i])
         trial_dict['fs_RT'] = decision_trials.rt[i]
-        trial_dict['ss_stims'] = (stims.index(decision_trials.stimulus[i+1][39:52]), stims.index(decision_trials.stimulus[i+1][-21:-8]))
+        trial_dict['ss_stims'] = (stims.index(probe.match(decision_trials.stimulus[i+1]).group(1)), stims.index(probe.match(decision_trials.stimulus[i+1]).group(2)))
         if decision_trials.key_press[i+1] != -1:
             trial_dict['ss_choice'] = actions.index(decision_trials.key_press[i+1])
             trial_dict['ss_RT'] = decision_trials.rt[i+1]
