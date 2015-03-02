@@ -44,7 +44,20 @@
 		'fixed throughout the experiment.</p>' +
 		'<p class="block-text"> We will begin with some practice, press <strong>"Enter"</strong> to start.</p></div>'
  
-	
+	var decision_reminder = 
+		'<div class="instructions">' +
+  		'<div style="width: 600px; margin: 0 auto; text-align: center;' +
+  		'background-color: #8C1516; padding: 20px 15px 10px 10px">' +
+    	'<img src="images/stanford.png" height="46" width="360" alt="Stanford University"></div>' +
+		'<p class="block-text">Practice is complete. In this next section there will be new shapes ' +
+		'associated with new stage colors. The task is exactly the same. First stage choices will bring ' +
+		'you to one of two second-stages. Each choice is primarily associated with one of the two second-stages. ' +
+		'In the second stage you will make a second choice which will either result in a gold coin or a "0". ' +
+		'Each second-stage choice has a different probability of giving a gold coin, and this probability ' +
+		'changes over the experiment. You will get a bonus based on how many gold coins you get, so try ' +
+		'to learn the best choices to maximize your earnings. There will be two breaks 1/3 and 2/3 of the way through. ' +
+		'To begin press <strong>Enter</strong>.'
+ 
 	var stroop_instructions = 
 		'<div class="instructions"><div style="width: 500px; margin: 0 auto; text-align:' +  
 		'center; background-color: #8C1516; padding: 20px 15px 10px 10px">' +
@@ -93,10 +106,7 @@
     
      var decision_begin_text= {
         type: 'text',
-        text: "<div class = centerbox style = text-align:center><div class='instructions'>" +
-        	"<p>We'll now start the real experiment.</p> " +
-        	"<p>There will be two breaks 1/3 and 2/3 of the way through.</p>" +
-        	"<p>To begin press <strong>'Enter'</strong>.</p></div></div",
+        text: decision_reminder
 		cont_key: 13
     }
     
