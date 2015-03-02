@@ -363,12 +363,14 @@ button:hover {
 }
 
 .decision-top-background {
-    width:500px;
+  width:500px;
   position:absolute;
   top:50%;
   left:50%;
   margin-right:-50%;
   transform: translate(-50%,-130%);
+  border-style: solid;
+  border-color: white;
 }
 
 .decision-fb {
