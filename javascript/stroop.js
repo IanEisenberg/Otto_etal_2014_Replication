@@ -36,7 +36,7 @@
 	
 	var get_stroop_feedback = function() {
 		var global_trial = jsPsych.progress().current_trial_global
-		var previous_choice = jsPsych.data.getData()[global_trial-1].key_press
+		var previous_choice = jsPsych.data.getData()[global_trial-2].key_press
 		if (stim_color == 'r') {
 			if (previous_choice == 82) { return "<div class = centerbox><p class = stroop-stim>correct</p></div>"}
 			else {return "<div class = centerbox><p class = stroop-stim>incorrect</p></div>"}
