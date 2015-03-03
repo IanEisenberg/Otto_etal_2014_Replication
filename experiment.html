@@ -113,7 +113,7 @@
     
 	var practice_stroop_chunk = {
 		chunk_type: 'while',
-		timeline: [fixation, practice_stroop_stim, practice_fb, intertrial_wait],
+		timeline: [fixation, practice_stroop_stim, intertrial_wait, practice_fb, intertrial_wait],
 		continue_function: function() {
 			if (practice_stims.stimulus.length == 0) { return false;}
 			else { return true;}
@@ -188,6 +188,7 @@
 	
 	var decision_before = Math.round(Math.random())
 	var experiment = [];
+	decision_before = 0
 		
 	if (decision_before == 1) {	
 		experiment.push(decision_text)
@@ -226,7 +227,7 @@
 	}
 	experiment.push(submit);
 	
-	jsPsych.preloadImages([experiment_stims, practice_dstims], function() {startExperiment();});
+	jsPsych.preloadImages([experiment_stims, practice_dstims, 'images/gold_coin.png'], function() {startExperiment();});
 	function startExperiment(){
 		jsPsych.init({
 			experiment_structure: experiment

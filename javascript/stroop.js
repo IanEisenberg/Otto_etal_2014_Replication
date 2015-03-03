@@ -51,6 +51,7 @@
 		}
 	}
 	
+   			 
 	var fixation = {
 		type: "single-stim",
 		stimuli: ["<div class = centerbox><p class = 'stroop-stim'>+</p></div>"],
@@ -63,19 +64,22 @@
 	
 	var intertrial_wait = {
 		type: "single-stim",
-		stimuli: [],
+		stimuli: "",
 		continue_after_response: false,
+		is_html: true,
+		timing_post_trial: 0,
 		timing_stim: 250,
-		timing_response: 250,
-		timing_post_trial: 0
+		timing_response: 250
 	}
+
 	
 	var freq_stroop_stim = {
 		type: "single-stim",
 		stimuli: next_freq_stim,
 		is_html: true,
 		choices: [82, 66, 71],
-		data: {type: 'stroop_frequent'}
+		data: {type: 'stroop_frequent'},
+		timing_post_trial: 0
 	}
 	
 	var infreq_stroop_stim = {
@@ -83,7 +87,8 @@
 		stimuli: next_infreq_stim,
 		is_html: true,
 		choices: [82, 66, 71],
-		data: {type: 'stroop_infrequent'}
+		data: {type: 'stroop_infrequent'},
+		timing_post_trial: 0
 	}
 
 	var practice_stroop_stim = {
@@ -94,7 +99,8 @@
 		prompt: '<div class = centerinstructions style = text-align:center><p>Keys: <span class="large"' + 
 		'style = "color:red">R</span> <span class="large"style = "color:blue">B</span> ' +
 		'<span class="large"style = "color:green">G</span></div>',
-		data: {type: 'stroop_practice'}
+		data: {type: 'stroop_practice'},
+		timing_post_trial: 0
 	}
 	
 	var practice_fb = {
