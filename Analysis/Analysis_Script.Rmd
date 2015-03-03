@@ -1,0 +1,37 @@
+---
+title: "Analysis"
+output: html_document
+---
+
+```{r import libraries}
+  library(ggplot2)
+  library(dplyr)
+```
+
+```{r Load data}
+ stroop_df = read.csv('../Data/001_stroop_df.csv')
+ decision_df = read.csv('../Data/001_decision_df.csv')
+```
+
+```{r stroop analysis}
+  #remove practice
+  stroop_df = stroop_df[stroop_df$type %in% c('frequent','infrequent'),]
+  #convert logical strings to logical values
+  stroop_df$correct = stroop_df$correct == 'True'
+  stroop_df$congruent= stroop_df$congruent == 'True'
+  #spot check that the frequencies are correct
+  print(group_by(stroop_df, type) %>% summarise('incongruent_freq' = mean(congruent)))
+  stroop_df_clean = stroop_df[stroop_df$correct == T,]
+  stroop_rs = lm(rt ~ congruent * type, data = stroop_df_clean)
+  summary(stroop_rs)
+  IE_freq = stroop_rs$coefficients[2]
+  IE_infreq = stroop_rs$coefficients[2] + stroop_rs$coefficients[4]
+```
+
+```{r stroop plot}
+  RT_summary = group_by(stroop_df_clean, type, congruent) %>% summarise('meanRT' = mean(rt))
+  ggplot(data = RT_summary, aes(x = congruent, y = meanRT, fill = congruent )) + geom_bar(stat = 'identity') + facet_grid(.~type)
+```
+
+
+
