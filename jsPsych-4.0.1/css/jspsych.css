@@ -301,18 +301,17 @@ button:hover {
 .selected{
 	-webkit-animation: movetop 1s;
 	animation: movetop 1s;
-	border-style: dotted;
-    border-color: red;
+	border: 4px dotted red;
 }
 
 
 @-webkit-keyframes fade {
-	50% {opacity: 1;}
+	80% {opacity: 1;}
     100% {opacity: 0;}
 }
 
 @keyframes fade {
-	50% {opacity: 1;}
+	80% {opacity: 1;}
     100% {opacity: 0;}
 }
 
@@ -363,7 +362,7 @@ button:hover {
 }
 
 .decision-top-background {
-  width:500px;
+  width:330px;
   position:absolute;
   top:50%;
   left:50%;

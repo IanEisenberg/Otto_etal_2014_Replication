@@ -188,7 +188,6 @@
 	
 	var decision_before = Math.round(Math.random())
 	var experiment = [];
-	decision_before = 1
 		
 	if (decision_before == 1) {	
 		experiment.push(decision_text)
@@ -230,8 +229,7 @@
 	jsPsych.preloadImages([experiment_stims, practice_dstims], function() {startExperiment();});
 	function startExperiment(){
 		jsPsych.init({
-			experiment_structure: experiment,
-			show_progress_bar: true
+			experiment_structure: experiment
 		});
 	}
 	

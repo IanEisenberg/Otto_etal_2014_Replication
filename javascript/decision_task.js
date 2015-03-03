@@ -170,8 +170,8 @@ var choose_second_stage = function() {
 		stage = stim_ids[action]
 		if (Math.random() < .3) {stage = 1-stage}
 		stage_tmp = stage * 2
-		return "<div class = 'decision-top-background' style='background:" + colors[0] +"; width:330px;height:230px;'>" +
-			"<img class = 'decision-stim faded' src= '" + all_stims[first_selected] + "'></div>" + 
+		return "<div class = 'decision-top-background faded' style='background:" + colors[0] +"; width:330px;height:230px;'>" +
+			"<img class = 'decision-stim' src= '" + all_stims[first_selected] + "'></div>" + 
 			second_stage_stim.stimulus[stage_tmp + Math.round(Math.random())]}
 }
 
@@ -223,14 +223,14 @@ var get_feedback = function() {
 	 							"Please respond faster </p></div>"}
 	else if (Math.random() < FB_matrix[stim_ids[action]-2]) {
 		update_FB();
-		return "<div class = 'decision-top-background' style='background:" + colors[stage+1] +"; width:330px;height:230px;'>" +
-			"<img class = 'decision-stim faded' src= '" + all_stims[second_selected] + "'></div>" +
+		return "<div class = 'decision-top-background faded' style='background:" + colors[stage+1] +"; width:330px;height:230px;'>" +
+			"<img class = 'decision-stim' src= '" + all_stims[second_selected] + "'></div>" +
 			"<div><img  class = decision-fb src = 'images/gold_coin.png'></img></div>"
 	}
 	else {
 		update_FB(); 
-		return "<div class = 'decision-top-background' style='background:" + colors[stage+1] +"; width:330px;height:230px;'>" +
-		"<img class = 'decision-stim faded' src= '" + all_stims[second_selected] + "'></div>" +
+		return "<div class = 'decision-top-background faded' style='background:" + colors[stage+1] +"; width:330px;height:230px;'>" +
+		"<img class = 'decision-stim' src= '" + all_stims[second_selected] + "'></div>" +
 			"<div style = text-align:center><p class = decision-fb style = 'color:red;font-size:60px'>0</p></div>"
 	}
 }

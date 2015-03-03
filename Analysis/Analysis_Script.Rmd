@@ -19,13 +19,16 @@ output: html_document
   #convert logical strings to logical values
   stroop_df$correct = stroop_df$correct == 'True'
   stroop_df$congruent= stroop_df$congruent == 'True'
+  stroop_df$repeat_stim= stroop_df$repeat_stim == 'True'
   #spot check that the frequencies are correct
   print(group_by(stroop_df, type) %>% summarise('incongruent_freq' = mean(congruent)))
   stroop_df_clean = stroop_df[stroop_df$correct == T,]
-  stroop_rs = lm(rt ~ congruent * type, data = stroop_df_clean)
+  #log transform rt's to remove skew, and z-transform across all correct trials
+  stroop_df_clean$rt = scale(log(stroop_df_clean$rt))
+  stroop_rs = lm(rt ~ congruent * type + repeat_stim, data = stroop_df_clean)
   summary(stroop_rs)
   IE_freq = stroop_rs$coefficients[2]
-  IE_infreq = stroop_rs$coefficients[2] + stroop_rs$coefficients[4]
+  IE_infreq = stroop_rs$coefficients[2] + stroop_rs$coefficients[5]
 ```
 
 ```{r stroop plot}
