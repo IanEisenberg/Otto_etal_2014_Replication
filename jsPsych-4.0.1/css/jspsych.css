@@ -299,8 +299,8 @@ button:hover {
 }
 
 .selected{
-	-webkit-animation: movetop 1s;
-	animation: movetop 1s;
+	-webkit-animation: movetop 1.01s;
+	animation: movetop 1.01s;
 	border: 4px dotted red;
 }
 
@@ -321,8 +321,8 @@ button:hover {
 }
 
 .fade {
-	-webkit-animation: fade 1s;
-	animation: fade 1s;
+	-webkit-animation: fade 1.01s;
+	animation: fade 1.01s;
 }
 
 .centerbox {
