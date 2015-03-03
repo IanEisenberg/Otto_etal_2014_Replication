@@ -57,7 +57,7 @@
 		'Each second-stage choice has a different probability of giving a gold coin, and this probability ' +
 		'changes over the experiment. You will get a bonus based on how many gold coins you get, so try ' +
 		'to learn the best choices to maximize your earnings. There will be two breaks 1/3 and 2/3 of the way through. ' +
-		'To begin press <strong>Enter</strong>.'
+		'<p class="block-text">To begin press <strong>Enter</strong></p>.'
  
 	var stroop_instructions = 
 		'<div class="instructions"><div style="width: 500px; margin: 0 auto; text-align:' +  
@@ -216,8 +216,10 @@
 	}
 	if (decision_before == 0) {
 		experiment.push(decision_text)
+		experiment.push(decision_globaldata);
 		experiment.push(decision_practice);
 		experiment.push(decision_begin_text);
+		experiment.push(decision_globaldata);
 		experiment.push(decision_chunk1);
 		experiment.push(inter_block);
 		experiment.push(decision_chunk2);

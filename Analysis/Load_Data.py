@@ -15,7 +15,8 @@ files = os.listdir('../sandbox-results/')
 subj_lookup = {}
 curr_subj = 1
 
-for file in files:
+for file in files[0:2]:
+    file = files[0]
     subj_id = '%03d' % curr_subj
     subj_lookup[subj_id] = file    
     
@@ -148,7 +149,6 @@ for file in files:
     decision_final_df.to_csv('../Data/' + subj_id +'_decision_df.csv')
 
     curr_subj+=1
-    break
     
     
 #    

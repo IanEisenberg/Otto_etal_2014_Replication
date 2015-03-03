@@ -293,9 +293,7 @@ var decision_globaldata = {
 	timing_stim: 5,
 	timing_response: 5,
 	global_params: get_global_params,
-	data: {
-		type: 'decision_global',
-	}	
+	data: {type: 'decision_global'}	
 }
 
 

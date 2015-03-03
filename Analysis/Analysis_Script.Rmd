@@ -24,9 +24,14 @@ output: html_document
   print(group_by(stroop_df, type) %>% summarise('incongruent_freq' = mean(congruent)))
   stroop_df_clean = stroop_df[stroop_df$correct == T,]
   #log transform rt's to remove skew, and z-transform across all correct trials
-  stroop_df_clean$rt = scale(log(stroop_df_clean$rt))
-  stroop_rs = lm(rt ~ congruent * type + repeat_stim, data = stroop_df_clean)
+  stroop_df_clean$rt_logZ = scale(log(stroop_df_clean$rt))
+  stroop_rs = lm(rt_logZ ~ congruent * type, data = stroop_df_clean)
   summary(stroop_rs)
+  #back out of Z/log transform to interpret
+  log_rt_mean = mean(log(stroop_df_clean$rt))
+  log_rt_sd = sd(log(stroop_df_clean$rt))
+
+
   IE_freq = stroop_rs$coefficients[2]
   IE_infreq = stroop_rs$coefficients[2] + stroop_rs$coefficients[5]
 ```
