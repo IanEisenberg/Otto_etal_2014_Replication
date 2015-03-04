@@ -46,15 +46,11 @@ for file in files[0:2]:
     stroop_df['id'] = subj_id
     stroop_df.index = range(len(stroop_df))
     stroop_df.index.name = 'trial'
-    stroop_df.to_csv('../Data/' + subj_id +'_stroop_df.csv')
-
-    #quick look at stroop means
-    infreq_stroop = stroop_df.query('correct == True and type == "infrequent"')
-    freq_stroop = stroop_df.query('correct == True and type == "frequent"')
     
-    
-    
-    
+    #ensure that subject had >75% accuracy on the stroop
+    if np.mean(stroop_df.query('type != "practice"')['correct'])<.75:
+        continue
+   
     #Create a decision task dataset
     decision_trials = df_trials[np.logical_not(stroop_trials)]
     decision_trials.index = range(len(decision_trials))
@@ -80,11 +76,11 @@ for file in files[0:2]:
         trial_dict['trial_count'] = decision_trials['trial_count'][i]
         if decision_trials.key_press[i] != -1:
             trial_dict['fs_stims'] = (stims.index(probe.match(decision_trials.stimulus[i]).group(1)), stims.index(probe.match(decision_trials.stimulus[i]).group(2)))
-            trial_dict['fs_choice'] = actions.index(decision_trials.key_press[i])
+            trial_dict['fs_choice'] = trial_dict['fs_stims'][actions.index(decision_trials.key_press[i])]
             trial_dict['fs_RT'] = decision_trials.rt[i]
             trial_dict['ss_stims'] = (stims.index(probe.match(decision_trials.stimulus[i+1]).group(1)), stims.index(probe.match(decision_trials.stimulus[i+1]).group(2)))
             if decision_trials.key_press[i+1] != -1:
-                trial_dict['ss_choice'] = actions.index(decision_trials.key_press[i+1])
+                trial_dict['ss_choice'] = trial_dict['ss_stims'][actions.index(decision_trials.key_press[i+1])]
                 trial_dict['ss_RT'] = decision_trials.rt[i+1]
                 trial_dict['FB'] = int(not 'red' in decision_trials.stimulus[i+2])
     
@@ -92,7 +88,7 @@ for file in files[0:2]:
                 trial_dict['ss_choice'] = -1
                 trial_dict['FB'] = -1
         else:
-            trial_dict['fs_stims'] = (stims.index(decision_trials.stimulus[i][39:52]), stims.index(decision_trials.stimulus[i][-21:-8]))
+            trial_dict['fs_stims'] = (stims.index(probe.match(decision_trials.stimulus[i]).group(1)), stims.index(probe.match(decision_trials.stimulus[i]).group(2)))
             trial_dict['fs_choice'] = -1
             trial_dict['ss_stims'] = -1
             trial_dict['ss_choice'] = -1
@@ -105,6 +101,23 @@ for file in files[0:2]:
     practice_df.set_value(0,'switch', None)
     practice_df.set_index(practice_df['trial_count'], inplace=True)
     practice_df.drop('trial_count', axis = 1, inplace = True)    
+    transition = []
+    for i in practice_df.index:
+        if practice_df.fs_choice[i] == 0:
+            if practice_df.ss_stims.ix[i] == (2,3) or practice_df.ss_stims.ix[i] == (3,2):
+                transition.append('common')
+            else:
+                transition.append('rare')
+        elif practice_df.fs_choice[i] == 1:
+            if practice_df.ss_stims.ix[i] == (2,3) or practice_df.ss_stims.ix[i] == (3,2):
+                transition.append('rare')
+            else:
+                transition.append('common')
+        else:
+            transition.append(np.nan)
+    practice_df['transition'] = transition
+    
+    
     #make task dataframe
     #get stims
     stims = global_params[task_start]['stims']
@@ -119,47 +132,63 @@ for file in files[0:2]:
         trial_dict['trial_count'] = decision_trials['trial_count'][i]
         if decision_trials.key_press[i] != -1:
             trial_dict['fs_stims'] = (stims.index(probe.match(decision_trials.stimulus[i]).group(1)), stims.index(probe.match(decision_trials.stimulus[i]).group(2)))
-            trial_dict['fs_choice'] = actions.index(decision_trials.key_press[i])
+            trial_dict['fs_choice'] = trial_dict['fs_stims'][actions.index(decision_trials.key_press[i])]
             trial_dict['fs_RT'] = decision_trials.rt[i]
             trial_dict['ss_stims'] = (stims.index(probe.match(decision_trials.stimulus[i+1]).group(1)), stims.index(probe.match(decision_trials.stimulus[i+1]).group(2)))
             if decision_trials.key_press[i+1] != -1:
-                trial_dict['ss_choice'] = actions.index(decision_trials.key_press[i+1])
+                trial_dict['ss_choice'] = trial_dict['ss_stims'][actions.index(decision_trials.key_press[i+1])]
                 trial_dict['ss_RT'] = decision_trials.rt[i+1]
                 trial_dict['FB'] = int(not 'red' in decision_trials.stimulus[i+2])
             else:
                 trial_dict['ss_choice'] = -1
                 trial_dict['FB'] = -1
         else:
-            trial_dict['fs_stims'] = (stims.index(decision_trials.stimulus[i][39:52]), stims.index(decision_trials.stimulus[i][-21:-8]))
+            trial_dict['fs_stims'] = (stims.index(probe.match(decision_trials.stimulus[i]).group(1)), stims.index(probe.match(decision_trials.stimulus[i]).group(2)))
             trial_dict['fs_choice'] = -1
-            trial_dict['ss_stims'] = -1
+            trial_dict['ss_stims'] = (-1,-1)
             trial_dict['ss_choice'] = -1
             trial_dict['ss_RT'] = -1
             trial_dict['FB'] = -1
         task_trials.append(trial_dict)
     
     decision_df = pandas.DataFrame(task_trials)
-    decision_df['switch'] = (decision_df.fs_choice.shift(1)!=decision_df.fs_choice).astype(int)
+    decision_df['Switch'] = (decision_df.fs_choice.shift(1)!=decision_df.fs_choice).astype(int)
     decision_df.set_value(0,'switch', None)
     decision_df.set_index(decision_df['trial_count'], inplace=True)
     decision_df.drop('trial_count', axis = 1, inplace = True)
+    #add a column for rare vs. common transitions. A rare transition is
+    #first stage 0 -> second-stage 4 or 5, and common is second stage 2 or 3
+    transition = []
+    for i in decision_df.index:
+        if decision_df.fs_choice[i] == 0:
+            if decision_df.ss_stims.ix[i] == (2,3) or decision_df.ss_stims.ix[i] == (3,2):
+                transition.append('common')
+            else:
+                transition.append('rare')
+        elif decision_df.fs_choice[i] == 1:
+            if decision_df.ss_stims.ix[i] == (2,3) or decision_df.ss_stims.ix[i] == (3,2):
+                transition.append('rare')
+            else:
+                transition.append('common')
+        else:
+            transition.append(np.nan)
+    decision_df['transition'] = transition
+            
+    
+    
+    #ensure that subjects did not miss more than 20 response deadlines    
+    if np.sum(decision_df['ss_choice']==-1)>20:
+        continue
     
     #concat practice and task trials into one df
     decision_final_df=pandas.concat([practice_df,decision_df], keys = ['practice','task'], names = ['type','trial'])
+    stroop_df.to_csv('../Data/' + subj_id +'_stroop_df.csv')
     decision_final_df.to_csv('../Data/' + subj_id +'_decision_df.csv')
 
     curr_subj+=1
     
     
-#    
-##remove trials where subject didn't respond in one of the two trials
-#no_response_trials = np.logical_or(decision_df.fs_choice == -1, decision_df.ss_choice == -1);
-##remove trials without response
-#decision_df = decision_df[np.logical_not(no_response_trials)]
-#
-##QA - check that the correct second stage came up 70% of the time after the relevant key was pressed
-#tmp = [decision_df.ss_stims[i][0] for i in decision_df.index if decision_df.fs_stims[i][int(decision_df.fs_choice[i])]==1]
-#sum([i == 2 or i == 3 for i in tmp])/float(len(tmp))
+
 
 
 

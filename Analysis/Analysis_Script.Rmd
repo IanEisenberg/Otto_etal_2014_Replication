@@ -6,30 +6,33 @@ output: html_document
 ```{r import libraries}
   library(ggplot2)
   library(dplyr)
+  library(lme4)
+  library(quantmod) #for lag function
 ```
 
 ```{r Load data}
- stroop_df = read.csv('../Data/001_stroop_df.csv')
- decision_df = read.csv('../Data/001_decision_df.csv')
+  #stroop_df and decision_df
+  s_df = read.csv('../Data/001_stroop_df.csv')
+  d_df = read.csv('../Data/001_decision_df.csv')
 ```
 
 ```{r stroop analysis}
   #remove practice
-  stroop_df = stroop_df[stroop_df$type %in% c('frequent','infrequent'),]
+  s_df = s_df[s_df$type %in% c('frequent','infrequent'),]
   #convert logical strings to logical values
-  stroop_df$correct = stroop_df$correct == 'True'
-  stroop_df$congruent= stroop_df$congruent == 'True'
-  stroop_df$repeat_stim= stroop_df$repeat_stim == 'True'
+  s_df$correct = s_df$correct == 'True'
+  s_df$congruent= s_df$congruent == 'True'
+  s_df$repeat_stim= s_df$repeat_stim == 'True'
   #spot check that the frequencies are correct
-  print(group_by(stroop_df, type) %>% summarise('incongruent_freq' = mean(congruent)))
-  stroop_df_clean = stroop_df[stroop_df$correct == T,]
+  print(group_by(s_df, type) %>% summarise('incongruent_freq' = mean(congruent)))
+  s_df_clean = s_df[s_df$correct == T,]
   #log transform rt's to remove skew, and z-transform across all correct trials
-  stroop_df_clean$rt_logZ = scale(log(stroop_df_clean$rt))
-  stroop_rs = lm(rt_logZ ~ congruent * type, data = stroop_df_clean)
+  s_df_clean$rt_logZ = scale(log(s_df_clean$rt))
+  stroop_rs = lm(rt_logZ ~ congruent * type + repeat_stim, data = s_df_clean)
   summary(stroop_rs)
   #back out of Z/log transform to interpret
-  log_rt_mean = mean(log(stroop_df_clean$rt))
-  log_rt_sd = sd(log(stroop_df_clean$rt))
+  log_rt_mean = mean(log(s_df_clean$rt))
+  log_rt_sd = sd(log(s_df_clean$rt))
 
 
   IE_freq = stroop_rs$coefficients[2]
@@ -37,9 +40,31 @@ output: html_document
 ```
 
 ```{r stroop plot}
-  RT_summary = group_by(stroop_df_clean, type, congruent) %>% summarise('meanRT' = mean(rt))
+  RT_summary = group_by(s_df_clean, type, congruent) %>% summarise('meanRT' = mean(rt))
   ggplot(data = RT_summary, aes(x = congruent, y = meanRT, fill = congruent )) + geom_bar(stat = 'identity') + facet_grid(.~type)
 ```
 
 
+```{r decision analysis}
+  #remove practice trials and only use trials where the subject actually responded
+  d_df_clean = d_df[d_df$type == 'task' & d_df$FB!=-1,]
+  #refactor dataframe
+  cat = sapply(d_df_clean, is.factor) 
+  d_df_clean[cat] = lapply(d_df_clean[cat], factor)
+  d_df_clean$fs_choice = as.factor(d_df_clean$fs_choice)
+  d_df_clean$ss_choice = as.factor(d_df_clean$ss_choice)
+  d_df_clean$switch = as.factor(d_df_clean$switch)
+  d_df_clean$lag_transition = lag(transition)
+  d_df_clean$lag_FB = as.factor(lag(FB))
+  #remove first row because we are interested in switches
+  d_df_clean=d_df_clean[-1,]
+
+  decision_rs = glm(switch ~ lag_FB * lag_transition, family = binomial, data = d_df_clean)
+  summary(decision_rs)
+```
+
+```{r decision plot single subject}
+  decision_summary = group_by(d_df_clean, lag_transition, lag_FB) %>% summarise('P_switch' = mean(switch)-1)
+  ggplot(data = decision_summary, aes(x = lag_FB, y = P_switch, fill = lag_FB)) + geom_bar(stat = 'identity') + facet_grid(.~lag_transition)
+```
 

@@ -22,7 +22,7 @@
   		'<div style="width: 600px; margin: 0 auto; text-align: center;' +
   		'background-color: #8C1516; padding: 20px 15px 10px 10px">' +
     	'<img src="images/stanford.png" height="46" width="360" alt="Stanford University"></div>' +
-		'<p class="block-text">In this section, you will be required to make decisions in two ' +
+		'<p class="block-text">In this section, you need to make decisions in two ' +
 		'stages to get money. ' + 
 		'In each stage, two abstract shapes will come up on the screen overlaid on colored backgrounds. You choose one by ' +
 		'pressing either "&larr;" or "&rarr;". Your choice in the first stage will bring you to one ' +
@@ -49,15 +49,15 @@
   		'<div style="width: 600px; margin: 0 auto; text-align: center;' +
   		'background-color: #8C1516; padding: 20px 15px 10px 10px">' +
     	'<img src="images/stanford.png" height="46" width="360" alt="Stanford University"></div>' +
-		'<p class="block-text">Practice is complete.</p> <p class="block-text">' +
+		'<p class="block-text">Practice is complete. ' +
 		'In this next section there will be new shapes ' +
-		'associated with new stage colors, but otherwise the task is exactly the same. First stage choices will bring ' +
+		'associated with new stage colors, but otherwise the task is exactly the same.</p> <p class="block-text">As a reminder, first stage choices will bring ' +
 		'you to one of two second-stages. Each first-stage choice is primarily associated with one of the two second-stages. ' +
 		'In the second stage you will make a second choice which will either result in a gold coin or a "0". ' +
 		'Each second-stage choice has a different probability of giving a gold coin, and this probability ' +
 		'changes over the experiment. You will get a bonus based on how many gold coins you get, so try ' +
-		'to learn the best choices to maximize your earnings. There will be two breaks 1/3 and 2/3 of the way through. ' +
-		'<p class="block-text">To begin press <strong>Enter</strong></p>.'
+		'to learn the best choices to maximize your earnings.</p><p class="block-text"> There will be two breaks 1/3 and 2/3 of the way through. ' +
+		'To begin press <strong>Enter</strong></p>.'
  
 	var stroop_instructions = 
 		'<div class="instructions"><div style="width: 500px; margin: 0 auto; text-align:' +  
@@ -69,11 +69,11 @@
 		'<span class = "large" style = "color:blue">BLUE</span> or ' +  
 		'<span class = "large" style = "color:red">BLUE</span>. Your task is to press ' + 
 		'the button corresponding to the <strong> ink color </strong> of the word. There will ' + 
-		'be two blocks of trials. The response keys are listed below: </p>' + 
+		'be two blocks of trials, each lasting around 3 minutes. The response keys are listed below: </p>' + 
 		'<p><span class="large" style = "color:red">COLOR WORD</span>: Press the <strong>R</strong> key</p>' + 
 		'<p><span class="large" style = "color:blue">COLOR WORD</span>: Press the <strong>B</strong> key</p>' + 
 		'<p><span class="large" style = "color:green">COLOR WORD</span>: Press the <strong>G</strong> key</p>' +  
-		'<p class = "block_text"> We will start with a few practice trials where you will get feedback. ' +
+		'<p class = "block-text"> We will start with a few practice trials where you will get feedback. ' +
 		'Instructions will remain on the screen during practice. To begin press <strong>"Enter"</strong>.	</p>'
 
 
@@ -188,7 +188,6 @@
 	
 	var decision_before = Math.round(Math.random())
 	var experiment = [];
-		
 	if (decision_before == 1) {	
 		experiment.push(decision_text)
 		experiment.push(decision_globaldata);

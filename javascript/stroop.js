@@ -25,7 +25,7 @@
 		return "<div class = centerbox>" + infreq_shuffled_stims.stimulus.shift() + "</div>"
 	}
 	
-	var practice_stims = jsPsych.randomization.repeat(stims, [2,2,1,1,1,2,0,1,0], true);
+	var practice_stims = jsPsych.randomization.repeat(stims, [4,4,4,2,2,2,2,2,2], true);
 
 	var stim_color = 0
 	var next_practice_stim = function() {
