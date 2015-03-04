@@ -187,7 +187,9 @@ for file in files:
 
     curr_subj+=1
     
-    
+
+pandas.DataFrame.from_dict(subj_lookup, orient = 'index').to_csv('../Data/subj_lookup.csv')
+
 
 
 
