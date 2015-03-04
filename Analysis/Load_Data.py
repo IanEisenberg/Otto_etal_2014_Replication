@@ -15,8 +15,7 @@ files = os.listdir('../sandbox-results/')
 subj_lookup = {}
 curr_subj = 1
 
-for file in files[0:2]:
-    file = files[0]
+for file in files:
     subj_id = '%03d' % curr_subj
     subj_lookup[subj_id] = file    
     
@@ -173,6 +172,7 @@ for file in files[0:2]:
         else:
             transition.append(np.nan)
     decision_df['transition'] = transition
+    decision_df
             
     
     
