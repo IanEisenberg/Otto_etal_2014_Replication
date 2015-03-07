@@ -414,7 +414,7 @@ var catch_trial = {
 		data: {type: 'decision_catch'}
 }
 
-var catch_timing = [Math.round(Math.random()*10+test_trial_num/6),
+var throw_timing = [Math.round(Math.random()*10+test_trial_num/6),
 					Math.round(Math.random()*10+test_trial_num/2),
 					Math.round(Math.random()*10+test_trial_num*5/6)]
 
@@ -422,8 +422,7 @@ var catch_chunk = {
 	chunk_type: 'if',
 	timeline: [catch_trial, d_intertrial_wait],
 	conditional_function: function() {
-		console.log(catch_timing[Math.floor(current_trial/(test_trial_num/3))])
-		return current_trial == catch_timing[Math.floor(current_trial/(test_trial_num/3))]
+		return current_trial == throw_timing[Math.floor(current_trial/(test_trial_num/3))]
 	}
 }
 
