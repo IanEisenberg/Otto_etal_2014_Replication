@@ -12,8 +12,8 @@ output: html_document
 
 ```{r Load data}
   #stroop_df and decision_df
-  s_df = read.csv('../Data/001_stroop_df.csv')
-  d_df = read.csv('../Data/001_decision_df.csv')
+  s_df = read.csv('../Data/002_stroop.csv')
+  d_df = read.csv('../Data/002_decision.csv')
 ```
 
 ```{r stroop analysis}
@@ -53,18 +53,43 @@ output: html_document
   d_df_clean[cat] = lapply(d_df_clean[cat], factor)
   d_df_clean$fs_choice = as.factor(d_df_clean$fs_choice)
   d_df_clean$ss_choice = as.factor(d_df_clean$ss_choice)
-  d_df_clean$switch = as.factor(d_df_clean$switch)
-  d_df_clean$lag_transition = lag(transition)
-  d_df_clean$lag_FB = as.factor(lag(FB))
+  d_df_clean$Switch = as.factor(d_df_clean$Switch)
+  d_df_clean$lag_transition = lag(d_df_clean$transition)
+  d_df_clean$lag_FB = as.factor(lag(d_df_clean$FB))
   #remove first row because we are interested in switches
   d_df_clean=d_df_clean[-1,]
 
-  decision_rs = glm(switch ~ lag_FB * lag_transition, family = binomial, data = d_df_clean)
+  decision_rs = glm(Switch ~ lag_FB * lag_transition, family = binomial, data = d_df_clean)
   summary(decision_rs)
 ```
 
 ```{r decision plot single subject}
-  decision_summary = group_by(d_df_clean, lag_transition, lag_FB) %>% summarise('P_switch' = mean(switch)-1)
+  decision_summary = group_by(d_df_clean, lag_transition, lag_FB) %>% summarise('P_switch' = mean(Switch)-1)
   ggplot(data = decision_summary, aes(x = lag_FB, y = P_switch, fill = lag_FB)) + geom_bar(stat = 'identity') + facet_grid(.~lag_transition)
 ```
+
+
+```{r Group Analysis}
+  s_df = read.csv('../Data/stroop_all_subj.csv')
+  d_df = read.csv('../Data/decision_all_subj.csv')
+```
+
+```{r decision analysis}
+  #remove practice trials and only use trials where the subject actually responded
+  d_df_clean = d_df[d_df$type == 'task' & d_df$FB!=-1,]
+  #refactor dataframe
+  cat = sapply(d_df_clean, is.factor) 
+  d_df_clean[cat] = lapply(d_df_clean[cat], factor)
+  d_df_clean$fs_choice = as.factor(d_df_clean$fs_choice)
+  d_df_clean$ss_choice = as.factor(d_df_clean$ss_choice)
+  d_df_clean$Switch = as.factor(d_df_clean$Switch)
+  d_df_clean$lag_transition = lag(d_df_clean$transition)
+  d_df_clean$lag_FB = as.factor(lag(d_df_clean$FB))
+  #remove first row because we are interested in switches
+  d_df_clean=d_df_clean[-1,]
+
+  decision_rs = glmer(Switch ~ lag_FB * lag_transition +(lag_FB*lag_transition | id), family = binomial, data = d_df_clean)
+  summary(decision_rs)
+```
+
 

@@ -55,7 +55,21 @@ var colors = practice_colors
 var practice_trial_num = 10
 var test_trial_num = 200
 
+//************************************
+// Define three catch trials
+//************************************
 
+var catch_shuffled = jsPsych.randomization.repeat([
+"<div class = centerbox style = text-align:center><p style = font-size:30px>" +
+	 							"Press the left arrow </p></div>",
+"<div class = centerbox style = text-align:center><p style = font-size:30px>" +
+	 							"Press the right arrow </p></div>",
+"<div class = centerbox style = text-align:center><p style = font-size:30px>" +
+	 							"Press nothing </p></div>" ],1)
+
+var choose_catch = function() {
+	return catch_shuffled.shift()
+}
 
 //************************************
 // Define first stage elements
@@ -386,3 +400,31 @@ var noFB_chunk = {
 		return FB_on == 0
 	}
 }
+
+var catch_trial = {
+		type: "single-stim",
+		stimuli: choose_catch,
+		is_html: true,
+		choices: actions,
+		timing_stim: 2000,
+		timing_response: 2000,
+		show_response: true,
+		timing_post_trial: 0,
+		trial_count: get_current_trial,
+		data: {type: 'decision_catch'}
+}
+
+var catch_timing = [Math.round(Math.random()*10+test_trial_num/6),
+					Math.round(Math.random()*10+test_trial_num/2),
+					Math.round(Math.random()*10+test_trial_num*5/6)]
+
+var catch_chunk = {
+	chunk_type: 'if',
+	timeline: [catch_trial, d_intertrial_wait],
+	conditional_function: function() {
+		console.log(catch_timing[Math.floor(current_trial/(test_trial_num/3))])
+		return current_trial == catch_timing[Math.floor(current_trial/(test_trial_num/3))]
+	}
+}
+
+
