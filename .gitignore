@@ -2,6 +2,7 @@ auth.json
 mturk-and-gmail.txt
 Ian_auth.json
 sandbox-results/*
+production-results/*
 history.csv
 hit_mods.json
 settings.json
