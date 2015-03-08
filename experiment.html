@@ -154,7 +154,7 @@
 	var decision_chunk1 = {
 		chunk_type: 'while',
 		timeline: [first_stage_chunk, second_stage,
-					FB_chunk, noFB_chunk, catch_chunk],
+					FB_chunk, noFB_chunk, catch_chunk, catch_chunk1],
 		continue_function: function() {
 			if (fs_stim_shuffled.stimulus.length <= Math.round(fs_stim_shuffled.id.length*2/3)) { return false;}
 			else {return true;}
@@ -164,7 +164,7 @@
 	var decision_chunk2 = {
 		chunk_type: 'while',
 		timeline: [first_stage_chunk, second_stage,
-					FB_chunk, noFB_chunk, catch_chunk],
+					FB_chunk, noFB_chunk, catch_chunk, catch_chunk1],
 		continue_function: function() {
 			if (fs_stim_shuffled.stimulus.length <= Math.round(fs_stim_shuffled.id.length/3)) { return false;}
 			else {return true;}
@@ -174,7 +174,7 @@
 	var decision_chunk3 = {
 		chunk_type: 'while',
 		timeline: [first_stage_chunk, second_stage,
-					FB_chunk, noFB_chunk, catch_chunk],
+					FB_chunk, noFB_chunk, catch_chunk, catch_chunk1],
 		continue_function: function() {
 			if (fs_stim_shuffled.stimulus.length == 0) { return false;}
 			else {return true;}

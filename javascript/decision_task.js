@@ -65,7 +65,7 @@ var catch_shuffled = jsPsych.randomization.repeat([
 "<div class = centerbox style = text-align:center><p style = font-size:30px>" +
 	 							"Press the right arrow </p></div>",
 "<div class = centerbox style = text-align:center><p style = font-size:30px>" +
-	 							"Press nothing </p></div>" ],1)
+	 							"Press nothing </p></div>" ],2)
 
 var choose_catch = function() {
 	return catch_shuffled.shift()
@@ -414,9 +414,13 @@ var catch_trial = {
 		data: {type: 'decision_catch'}
 }
 
-var throw_timing = [Math.round(Math.random()*10+test_trial_num/6),
-					Math.round(Math.random()*10+test_trial_num/2),
-					Math.round(Math.random()*10+test_trial_num*5/6)]
+var throw_timing = [Math.round(Math.random()*test_trial_num/20+test_trial_num/6),
+					Math.round(Math.random()*test_trial_num/20+test_trial_num/2),
+					Math.round(Math.random()*test_trial_num/20+test_trial_num*5/6)]
+					
+var throw_timing1 = [Math.round(Math.random()*test_trial_num/20+test_trial_num*3/12),
+					Math.round(Math.random()*test_trial_num/20+test_trial_num*4/12),
+					Math.round(Math.random()*test_trial_num/20+test_trial_num*11/12)]
 
 var catch_chunk = {
 	chunk_type: 'if',
@@ -426,4 +430,11 @@ var catch_chunk = {
 	}
 }
 
+var catch_chunk1 = {
+	chunk_type: 'if',
+	timeline: [catch_trial, d_intertrial_wait],
+	conditional_function: function() {
+		return current_trial == throw_timing1[Math.floor(current_trial/(test_trial_num/3))]
+	}
+}
 
