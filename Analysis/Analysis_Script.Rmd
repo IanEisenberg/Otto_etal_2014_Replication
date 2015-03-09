@@ -7,13 +7,13 @@ output: html_document
   library(ggplot2)
   library(dplyr)
   library(lme4)
-  library(quantmod) #for lag function
+  library(doBy) 
 ```
 
 ```{r Load data}
   #stroop_df and decision_df
-  s_df = read.csv('../Data/002_stroop.csv')
-  d_df = read.csv('../Data/002_decision.csv')
+  s_df = read.csv('../Data/003_stroop.csv')
+  d_df = read.csv('../Data/003_decision.csv')
 ```
 
 ```{r stroop analysis}
@@ -40,8 +40,11 @@ output: html_document
 ```
 
 ```{r stroop plot}
-  RT_summary = group_by(s_df_clean, type, congruent) %>% summarise('meanRT' = mean(rt))
-  ggplot(data = RT_summary, aes(x = congruent, y = meanRT, fill = congruent )) + geom_bar(stat = 'identity') + facet_grid(.~type)
+  RT_summary = group_by(s_df_clean, type, congruent) %>% summarise('meanRT' = mean(rt), 'sdRT' = sd(rt))
+  ggplot(data = RT_summary, aes(x = congruent, y = meanRT, fill = congruent )) + geom_bar(stat = 'identity') + facet_grid(.~type) +
+  geom_linerange(aes(ymin = meanRT-sdRT, ymax = meanRT+sdRT))
+
+  ggplot(data = s_df_clean, aes(x = congruent, y = rt, color = congruent)) + geom_point(position = position_jitter(w = 0.1,h = 0)) + facet_grid(.~type)
 ```
 
 
@@ -53,9 +56,10 @@ output: html_document
   d_df_clean[cat] = lapply(d_df_clean[cat], factor)
   d_df_clean$fs_choice = as.factor(d_df_clean$fs_choice)
   d_df_clean$ss_choice = as.factor(d_df_clean$ss_choice)
-  d_df_clean$Switch = as.factor(d_df_clean$Switch)
+  d_df_clean$Switch = factor(d_df_clean$Switch, labels = c("NoSwitch","Switch"))
   d_df_clean$lag_transition = lag(d_df_clean$transition)
-  d_df_clean$lag_FB = as.factor(lag(d_df_clean$FB))
+  d_df_clean$FB = factor(d_df_clean$FB, labels = c("Lose","Win"))
+  d_df_clean$lag_FB = factor(d_df_clean$lag_FB)
   #remove first row because we are interested in switches
   d_df_clean=d_df_clean[-1,]
 
@@ -64,32 +68,105 @@ output: html_document
 ```
 
 ```{r decision plot single subject}
-  decision_summary = group_by(d_df_clean, lag_transition, lag_FB) %>% summarise('P_switch' = mean(Switch)-1)
+  #rt plots
+  ggplot( data = d_df_clean, aes(x=trial, y = ss_RT, color = 'blue')) + geom_point() + geom_point(aes(y = fs_RT, color = 'red'))
+
+  decision_summary = group_by(d_df_clean[-1,], lag_transition, lag_FB) %>% summarise('P_switch' = mean(Switch)-1)
+
   ggplot(data = decision_summary, aes(x = lag_FB, y = P_switch, fill = lag_FB)) + geom_bar(stat = 'identity') + facet_grid(.~lag_transition)
 ```
 
 
-```{r Group Analysis}
-  s_df = read.csv('../Data/stroop_all_subj.csv')
-  d_df = read.csv('../Data/decision_all_subj.csv')
+```{r Individual analysis and concatenate subjects}
+  #load data, extract stroop incongruent effect for both conditions,
+  #clean up datasets, and concatenate all subjects
+  stroop_files = list.files(path = "../Data", pattern="*stroop.csv", full.names = T)
+  decision_files = list.files(path = "../Data", pattern="*decision.csv", full.names = T)
+  
+  #df for group level statistics
+  all_subj_df = data.frame()
+  #record IE and model-based indices for each subject
+  individual_stats = data.frame()
+  for (i in 1:length(temp)) {
+    s_df = read.csv(stroop_files[i])
+    d_df = read.csv(decision_files[i])
+    
+    #*********************
+    #stroop analysis
+    #*********************
+    #remove practice
+    s_df = s_df[s_df$type %in% c('frequent','infrequent'),]
+    #convert logical strings to logical values
+    s_df$correct = s_df$correct == 'True'
+    s_df$congruent= s_df$congruent == 'True'
+    s_df$repeat_stim= s_df$repeat_stim == 'True'
+    #spot check that the frequencies are correct
+    print(group_by(s_df, type) %>% summarise('incongruent_freq' = mean(congruent)))
+    s_df_clean = s_df[s_df$correct == T,]
+    #log transform rt's to remove skew, and z-transform across all correct trials
+    s_df_clean$rt_logZ = scale(log(s_df_clean$rt))
+    stroop_rs = lm(rt_logZ ~ congruent * type + repeat_stim, data = s_df_clean)
+    #extract the subject specific IE scores
+    IE_freq = stroop_rs$coefficients[2]
+    IE_infreq = stroop_rs$coefficients[2] + stroop_rs$coefficients[5]
+    
+    #and add them as regressors to the decision dataframe
+    d_df$IE_freq = IE_freq
+    d_df$IE_infreq = IE_infreq
+      
+    #remove practice trials and only use trials where the subject actually responded
+    d_df_clean = d_df[d_df$type == 'task' & d_df$FB!=-1,]
+    #refactor dataframe
+    cat = sapply(d_df_clean, is.factor) 
+    d_df_clean[cat] = lapply(d_df_clean[cat], factor)
+    d_df_clean$id = factor(d_df_clean$id)
+    d_df_clean$fs_choice = as.factor(d_df_clean$fs_choice)
+    d_df_clean$ss_choice = as.factor(d_df_clean$ss_choice)
+    d_df_clean$Switch = factor(d_df_clean$Switch, labels = c("NoSwitch","Switch"))
+    d_df_clean$lag_transition = lag(d_df_clean$transition)
+    d_df_clean$FB = factor(d_df_clean$FB, labels = c("Lose","Win"))
+    d_df_clean$lag_FB = lag(d_df_clean$FB)
+    #remove first row because we are interested in switches
+    d_df_clean=d_df_clean[-1,]
+    #get model-free, model-based index for each subject
+    decision_rs = glm(Switch ~ lag_FB * lag_transition , family = binomial, data = d_df_clean)
+    stats = data.frame('id' = d_df_clean$id[1],
+                            'IE_freq' = IE_freq,
+                            'IE_infreq' = IE_infreq,
+                            'M_free' = coefficients(decision_rs)[2],
+                            'M_based' = coefficients(decision_rs)[4])
+    individual_stats = rbind(individual_stats, stats)
+    
+    
+    #concatenate for group analysis
+    all_subj_df = rbind(all_subj_df,d_df_clean)
+    
+  }
+  
 ```
 
-```{r decision analysis}
-  #remove practice trials and only use trials where the subject actually responded
-  d_df_clean = d_df[d_df$type == 'task' & d_df$FB!=-1,]
-  #refactor dataframe
-  cat = sapply(d_df_clean, is.factor) 
-  d_df_clean[cat] = lapply(d_df_clean[cat], factor)
-  d_df_clean$fs_choice = as.factor(d_df_clean$fs_choice)
-  d_df_clean$ss_choice = as.factor(d_df_clean$ss_choice)
-  d_df_clean$Switch = as.factor(d_df_clean$Switch)
-  d_df_clean$lag_transition = lag(d_df_clean$transition)
-  d_df_clean$lag_FB = as.factor(lag(d_df_clean$FB))
-  #remove first row because we are interested in switches
-  d_df_clean=d_df_clean[-1,]
+```{r Group Analysis}
+  #Scale IE scores
+  all_subj_df$IE_freq = scale(all_subj_df$IE_freq)
+  all_subj_df$IE_infreq = scale(all_subj_df$IE_infreq)
+    
 
-  decision_rs = glmer(Switch ~ lag_FB * lag_transition +(lag_FB*lag_transition | id), family = binomial, data = d_df_clean)
+  #model switch based on FB and switch probability
+  decision_rs = glm(Switch ~ lag_FB * lag_transition , family = binomial, data = all_subj_df)
   summary(decision_rs)
+
+  decision_rs_mixed = glmer(Switch ~ lag_FB * lag_transition +(lag_FB*lag_transition | id), family = binomial, data = all_subj_df)
+  summary(decision_rs_mixed)
+
+  decision_rs_full = glmer(Switch ~ lag_FB * lag_transition * IE_freq  + (lag_FB*lag_transition | id), family = binomial, data = all_subj_df)
+  summary(decision_rs_full)
+```
+
+
+```{r group decision plot }
+  decision_summary = group_by(all_subj_df, lag_transition, lag_FB) %>% summarise('P_switch' = mean(Switch)-1)
+
+  ggplot(data = decision_summary, aes(x = lag_FB, y = P_switch, fill = lag_FB)) + geom_bar(stat = 'identity') + facet_grid(.~lag_transition)
 ```
 
 

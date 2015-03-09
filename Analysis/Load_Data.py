@@ -11,7 +11,7 @@ import numpy as np
 import pandas
 import re
 import os
-files = os.listdir('../sandbox-results/')
+files = os.listdir('../production-results/')
 subj_lookup = {}
 curr_subj = 1
 cat_stroop= pandas.DataFrame([])
@@ -26,6 +26,17 @@ for file in files[0:2]:
     
     #reduced the data set
     df_trials = df[df.type.notnull()]
+    
+    #check catch trials
+    catch_trials = [df_trials.type[i] == 'decision_catch' for i in df_trials.index]
+    catch_df = df_trials[catch_trials]
+    catch_df.reset_index(inplace = True)
+    #vector of catch requirements: 0 for nothing, 1 for left, 2 for right
+    catch_req = [('nothing' in s)* -1 or ('left' in s)*37 or ('right' in s)*39 for s in catch_df.stimulus]
+    catch_acc = [catch_df.key_press[i] == catch_req[i] for i in catch_df.index]
+    if sum(catch_acc) < 5:
+        print(file)
+    
     
     #Create a stroop dataset
     #first three are final action keys, second three were used for some practice
@@ -116,8 +127,7 @@ for file in files[0:2]:
         else:
             transition.append(np.nan)
     practice_df['transition'] = transition
-    
-    
+
     #make task dataframe
     #get stims
     stims = global_params[task_start]['stims']
@@ -173,7 +183,8 @@ for file in files[0:2]:
         else:
             transition.append(np.nan)
     decision_df['transition'] = transition
-    decision_df
+    bonus = (sum(decision_df['FB'])-len(decision_df)*.25)/100
+    print(subj_id + ': ' + file + '; bonus: ' + bonus)
             
     
     
@@ -183,7 +194,7 @@ for file in files[0:2]:
     
     #ensureP(stay|win) > 50%
     P_win_stay = []
-    for i in decision_df.index[0:10]:
+    for i in decision_df.index:
         ss_stim = decision_df['ss_stims'].ix[i]
         ss_choice = decision_df['ss_choice'].ix[i]
         for j in decision_df.index[(i+1):]:
@@ -210,6 +221,16 @@ cat_decision.to_csv('../Data/' + 'decision_all_subj.csv')
 
         
     
+
+a = pandas.DataFrame.from_csv('../Data/002_decision.csv')
+b = pandas.DataFrame.from_csv('../Data/003_decision.csv')
+cat_decision = pandas.concat([a,b])
+cat_decision.to_csv('../Data/' + 'decision_all_subj.csv')
+
+a = pandas.DataFrame.from_csv('../Data/002_stroop.csv')
+b = pandas.DataFrame.from_csv('../Data/003_stroop.csv')
+cat_stroop = pandas.concat([a,b])
+cat_stroop.to_csv('../Data/' + 'stroop_all_subj.csv')
 
 
 
