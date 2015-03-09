@@ -12,8 +12,8 @@ output: html_document
 
 ```{r Load data}
   #stroop_df and decision_df
-  s_df = read.csv('../Data/003_stroop.csv')
-  d_df = read.csv('../Data/003_decision.csv')
+  s_df = read.csv('../Data/001_stroop.csv')
+  d_df = read.csv('../Data/001_decision.csv')
 ```
 
 ```{r stroop analysis}
@@ -56,9 +56,11 @@ output: html_document
   d_df_clean[cat] = lapply(d_df_clean[cat], factor)
   d_df_clean$fs_choice = as.factor(d_df_clean$fs_choice)
   d_df_clean$ss_choice = as.factor(d_df_clean$ss_choice)
+  d_df_clean$Switch = d_df_clean$fs_choice != lag(d_df_clean$fs_choice)
   d_df_clean$Switch = factor(d_df_clean$Switch, labels = c("NoSwitch","Switch"))
   d_df_clean$lag_transition = lag(d_df_clean$transition)
   d_df_clean$FB = factor(d_df_clean$FB, labels = c("Lose","Win"))
+  d_df_clean$lag_FB = lag(d_df_clean$FB)
   d_df_clean$lag_FB = factor(d_df_clean$lag_FB)
   #remove first row because we are interested in switches
   d_df_clean=d_df_clean[-1,]
@@ -87,7 +89,7 @@ output: html_document
   all_subj_df = data.frame()
   #record IE and model-based indices for each subject
   individual_stats = data.frame()
-  for (i in 1:length(temp)) {
+  for (i in 1:length(stroop_files)) {
     s_df = read.csv(stroop_files[i])
     d_df = read.csv(decision_files[i])
     
@@ -122,6 +124,7 @@ output: html_document
     d_df_clean$id = factor(d_df_clean$id)
     d_df_clean$fs_choice = as.factor(d_df_clean$fs_choice)
     d_df_clean$ss_choice = as.factor(d_df_clean$ss_choice)
+    d_df_clean$Switch = d_df_clean$fs_choice != lag(d_df_clean$fs_choice)
     d_df_clean$Switch = factor(d_df_clean$Switch, labels = c("NoSwitch","Switch"))
     d_df_clean$lag_transition = lag(d_df_clean$transition)
     d_df_clean$FB = factor(d_df_clean$FB, labels = c("Lose","Win"))
@@ -158,7 +161,7 @@ output: html_document
   decision_rs_mixed = glmer(Switch ~ lag_FB * lag_transition +(lag_FB*lag_transition | id), family = binomial, data = all_subj_df)
   summary(decision_rs_mixed)
 
-  decision_rs_full = glmer(Switch ~ lag_FB * lag_transition * IE_freq  + (lag_FB*lag_transition | id), family = binomial, data = all_subj_df)
+  decision_rs_full = glmer(Switch ~ lag_FB * lag_transition * IE_infreq  + (lag_FB*lag_transition | id), family = binomial, data = all_subj_df)
   summary(decision_rs_full)
 ```
 

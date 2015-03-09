@@ -16,11 +16,11 @@ subj_lookup = {}
 curr_subj = 1
 cat_stroop= pandas.DataFrame([])
 cat_decision = pandas.DataFrame([])
-for file in files[0:2]:
+for file in files:
     subj_id = '%03d' % curr_subj
     subj_lookup[subj_id] = file    
     
-    f = open('../sandbox-results/' + file)
+    f = open('../production-results/' + file)
     data = json.load(f)
     df = pandas.DataFrame(data['answer'])
     
@@ -35,7 +35,7 @@ for file in files[0:2]:
     catch_req = [('nothing' in s)* -1 or ('left' in s)*37 or ('right' in s)*39 for s in catch_df.stimulus]
     catch_acc = [catch_df.key_press[i] == catch_req[i] for i in catch_df.index]
     if sum(catch_acc) < 5:
-        print(file)
+        print(file + " failed more than 1 catch trial")
     
     
     #Create a stroop dataset
@@ -60,6 +60,7 @@ for file in files[0:2]:
     
     #ensure that subject had >75% accuracy on the stroop
     if np.mean(stroop_df.query('type != "practice"')['correct'])<.75:
+        print(file + " failed 25% stroop trials")
         continue
    
     #Create a decision task dataset
@@ -108,8 +109,6 @@ for file in files[0:2]:
         practice_trials.append(trial_dict)
     
     practice_df = pandas.DataFrame(practice_trials)
-    practice_df['Switch'] = (practice_df.fs_choice.shift(1)!=practice_df.fs_choice).astype(int)
-    practice_df.set_value(0,'Switch', None)
     practice_df.set_index(practice_df['trial_count'], inplace=True)
     practice_df.drop('trial_count', axis = 1, inplace = True)    
     transition = []
@@ -162,8 +161,6 @@ for file in files[0:2]:
         task_trials.append(trial_dict)
     
     decision_df = pandas.DataFrame(task_trials)
-    decision_df['Switch'] = (decision_df.fs_choice.shift(1)!=decision_df.fs_choice).astype(int)
-    decision_df.set_value(0,'Switch', None)
     decision_df.set_index(decision_df['trial_count'], inplace=True)
     decision_df.drop('trial_count', axis = 1, inplace = True)
     #add a column for rare vs. common transitions. A rare transition is
@@ -184,12 +181,13 @@ for file in files[0:2]:
             transition.append(np.nan)
     decision_df['transition'] = transition
     bonus = (sum(decision_df['FB'])-len(decision_df)*.25)/100
-    print(subj_id + ': ' + file + '; bonus: ' + bonus)
+    print(subj_id + ': ' + file + '; bonus: ' + str(bonus))
             
     
     
     #ensure that subjects did not miss more than 20 response deadlines    
     if np.sum(decision_df['ss_choice']==-1)>20:
+        print(file + " didn't respond on more than 20 decision trials")
         continue
     
     #ensureP(stay|win) > 50%
@@ -197,11 +195,15 @@ for file in files[0:2]:
     for i in decision_df.index:
         ss_stim = decision_df['ss_stims'].ix[i]
         ss_choice = decision_df['ss_choice'].ix[i]
-        for j in decision_df.index[(i+1):]:
-            if decision_df['ss_stims'].ix[j] == ss_stim or tuple(reversed(decision_df['ss_stims'].ix[j])) == ss_stim:
-                P_win_stay.append(ss_choice == decision_df['ss_choice'].ix[j])
-                break
-    if np.mean(P_win_stay) < 50:
+        FB = decision_df['FB'].ix[i]
+        if FB ==1:
+            for j in decision_df.index[(i+1):]:
+                if decision_df['ss_stims'].ix[j] == ss_stim or tuple(reversed(decision_df['ss_stims'].ix[j])) == ss_stim:
+                    P_win_stay.append((i,j,ss_choice == decision_df['ss_choice'].ix[j]))
+                    break
+                
+    if np.mean(P_win_stay, axis = 0)[2] < .5:
+        print(file + "'s P(win|stay) < 50%")
         continue
     
     #concat practice and task trials into one df
@@ -210,27 +212,13 @@ for file in files[0:2]:
     decision_final_df.to_csv('../Data/' + subj_id +'_decision.csv')
     cat_stroop = pandas.concat([cat_stroop,stroop_df])
     cat_decision = pandas.concat([cat_decision,decision_final_df])
-    
     curr_subj+=1
+    
     
 
 pandas.DataFrame.from_dict(subj_lookup, orient = 'index').to_csv('../Data/subj_lookup.csv')
-cat_stroop.to_csv('../Data/' + 'stroop_all_subj.csv')
-cat_decision.to_csv('../Data/' + 'decision_all_subj.csv')
 
 
-        
-    
-
-a = pandas.DataFrame.from_csv('../Data/002_decision.csv')
-b = pandas.DataFrame.from_csv('../Data/003_decision.csv')
-cat_decision = pandas.concat([a,b])
-cat_decision.to_csv('../Data/' + 'decision_all_subj.csv')
-
-a = pandas.DataFrame.from_csv('../Data/002_stroop.csv')
-b = pandas.DataFrame.from_csv('../Data/003_stroop.csv')
-cat_stroop = pandas.concat([a,b])
-cat_stroop.to_csv('../Data/' + 'stroop_all_subj.csv')
 
 
 
