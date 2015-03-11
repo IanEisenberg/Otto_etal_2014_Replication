@@ -153,17 +153,19 @@ output: html_document
 ```
 
 ```{r Group Analysis}
-  #Scale IE scores
-  all_subj_df$IE_freq = scale(all_subj_df$IE_freq)
-  all_subj_df$IE_infreq = scale(all_subj_df$IE_infreq)
-  individual_stats$IE_freq = scale(individual_stats$IE_freq)
-  individual_stats$IE_infreq = scale(individual_stats$IE_infreq) 
   #exclude subjects where P(stay)=1 or 0 on any condition (transition*reward)
   decision_subj_summary = group_by(all_subj_df, lag_transition, lag_FB, id) %>% summarise('P_stay' = mean(stay)-1) 
   exclude_subj = decision_subj_summary$id[decision_subj_summary$P_stay==1]
   all_subj_df = all_subj_df[!is.element(all_subj_df$id,exclude_subj),]
   individual_stats = individual_stats[!is.element(individual_stats$id,exclude_subj),]
+  row.names(individual_stats) = seq(nrow(individual_stats))
 
+  #Scale IE scores
+  all_subj_df$IE_freq = scale(all_subj_df$IE_freq)
+  all_subj_df$IE_infreq = scale(all_subj_df$IE_infreq)
+  individual_stats$IE_freq = scale(individual_stats$IE_freq)
+  individual_stats$IE_infreq = scale(individual_stats$IE_infreq) 
+  
   #model stay based on FB and stay probability
   decision_rs = glm(stay ~ lag_FB * lag_transition , family = binomial, data = all_subj_df)
   summary(decision_rs)
@@ -205,25 +207,35 @@ output: html_document
 
 ```{r group decision plot }
   #Stroop, for confidence
-  RT_summary = group_by(all_subj_stroop, type, congruent) %>% summarise('meanRT' = mean(rt), 'sdRT' = sd(rt))
+  stroop_summary = group_by(all_subj_stroop, type, congruent) %>% summarise('meanRT' = mean(rt), 'sdRT' = sd(rt)/sqrt(n))
+  stroop_subj_summary = group_by(all_subj_stroop, type, congruent, id) %>% summarise('meanRT' = mean(rt))  
 
-  ggplot(data = RT_summary, aes(x = congruent, y = meanRT, fill = congruent )) + geom_bar(stat = 'identity') + facet_grid(.~type) +
-  geom_linerange(aes(ymin = meanRT-sdRT, ymax = meanRT+sdRT))
+  ggplot(data = stroop_summary, aes(x = congruent, y = meanRT, fill = congruent )) + geom_bar(stat = 'identity') + facet_grid(.~type) +
+  geom_linerange(aes(ymin = meanRT-2*sdRT, ymax = meanRT+2*sdRT)) + theme_bw()
+  ggsave(file = '../Plots/Stroop.pdf')
+
+  ggplot(data = stroop_subj_summary, aes(x = congruent, y = meanRT, fill = congruent )) + geom_bar(stat = 'identity') + 
+  facet_wrap(~id*type)  + theme_bw()
+  ggsave(file = '../Plots/Stroop_bySubj.pdf')
 
   #Decision plots
   ggplot(data = decision_summary, aes(x = lag_transition, y = P_stay_model, fill = lag_transition)) + geom_bar(stat = 'identity') +
   geom_linerange(aes(ymin = ci25, ymax = ci975)) + facet_grid(.~lag_FB) + ylab("Stay Probability") + xlab("") + 
   coord_cartesian(ylim = c(0, 1)) + ggtitle("Model Predictions") + theme_bw()
+  ggsave(file = '../Plots/Decision_Performance_Model.pdf')
 
   ggplot(data = decision_summary, aes(x = lag_transition, y = P_stay, fill = lag_transition)) + geom_bar(stat = 'identity') +
   geom_linerange(aes(ymin = P_stay-SE, ymax = P_stay+SE)) + facet_grid(.~lag_FB) + ylab("Stay Probability") + xlab("") + 
   coord_cartesian(ylim = c(.3, .9)) + ggtitle("Actual Data") + theme_bw()
+  ggsave(file = '../Plots/Decision_Performancel.pdf')
 
   ggplot(data = decision_subj_summary, aes(x = lag_transition, y = P_stay, fill = lag_transition)) + geom_bar(stat = 'identity') +
   facet_wrap(~id*lag_FB) + ylab("Stay Probability") + xlab("") + 
   coord_cartesian(ylim = c(0, 1)) + ggtitle("Actual Data by Subject") + theme_bw()
+  ggsave(file = '../Plots/Decision_Performancel_bySubj.pdf')
 
-  ggplot(data = individual_stats, aes(x=IE, y = r_M_based, color = condition)) + geom_point() + geom_smooth(method = lm) + facet_grid(.~condition) +xlab("Incongruency Effect (z score") + ylab("Model-based index") + theme_bw()
+  ggplot(data = individual_stats, aes(x=IE, y = r_M_based, color = condition)) + geom_point() + geom_smooth(method = lm, alpha = .2) + xlab("Incongruency Effect (z score") + ylab("Model-based index") + theme_bw()
+  ggsave(file = '../Plots/Decision_vs_Stroop.pdf')
 ```
 
 
