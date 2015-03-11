@@ -11,19 +11,27 @@ import numpy as np
 import pandas
 import re
 import os
-files = os.listdir('../production-results/')
+path = '../production-results/'
+files = sorted(os.listdir(path), key=lambda x: os.path.getctime(os.path.join(path, x)))
 subj_lookup = {}
 curr_subj = 1
 cat_stroop= pandas.DataFrame([])
 cat_decision = pandas.DataFrame([])
-for file in files:
+bonus_total = 0
+for file in files[1:]:
     subj_id = '%03d' % curr_subj
     subj_lookup[subj_id] = file    
-    
+    print('\n' + subj_id + ' : ' + file + '\n--------------')
     f = open('../production-results/' + file)
     data = json.load(f)
     df = pandas.DataFrame(data['answer'])
     
+    #print time to complete
+    start = map(int,data['AcceptTime'][11:19].split(":"))
+    finish = map(int,data['SubmitTime'][11:19].split(":"))
+    units = [60,1,1.0/60]
+    completion_time = round(np.sum([(first-second)*unit for first,second,unit in zip(finish,start,units)]),2)
+    print(data['WorkerId'] + " took " + str(completion_time) + " minutes to finish.")
     #reduced the data set
     df_trials = df[df.type.notnull()]
     
@@ -34,8 +42,10 @@ for file in files:
     #vector of catch requirements: 0 for nothing, 1 for left, 2 for right
     catch_req = [('nothing' in s)* -1 or ('left' in s)*37 or ('right' in s)*39 for s in catch_df.stimulus]
     catch_acc = [catch_df.key_press[i] == catch_req[i] for i in catch_df.index]
+    print(data['WorkerId'] + " failed " + str(6-sum(catch_acc)) + ' trials.')
     if sum(catch_acc) < 5:
-        print(file + " failed more than 1 catch trial")
+        continue
+        
     
     
     #Create a stroop dataset
@@ -60,7 +70,7 @@ for file in files:
     
     #ensure that subject had >75% accuracy on the stroop
     if np.mean(stroop_df.query('type != "practice"')['correct'])<.75:
-        print(file + " failed 25% stroop trials")
+        print(data['WorkerId'] + " failed 25% stroop trials")
         continue
    
     #Create a decision task dataset
@@ -187,7 +197,7 @@ for file in files:
     
     #ensure that subjects did not miss more than 20 response deadlines    
     if np.sum(decision_df['ss_choice']==-1)>20:
-        print(file + " didn't respond on more than 20 decision trials")
+        print(data['WorkerId'] + " didn't respond on more than 20 decision trials")
         continue
     
     #ensureP(stay|win) > 50%
@@ -202,8 +212,9 @@ for file in files:
                     P_win_stay.append((i,j,ss_choice == decision_df['ss_choice'].ix[j]))
                     break
                 
+    print(data['WorkerId'] + "'s P(win|stay) = " + str(np.mean(P_win_stay, axis = 0)[2]))
     if np.mean(P_win_stay, axis = 0)[2] < .5:
-        print(file + "'s P(win|stay) < 50%")
+        print(data['WorkerId'] + "'s P(win|stay) < 50%")
         continue
     
     #concat practice and task trials into one df
@@ -213,7 +224,7 @@ for file in files:
     cat_stroop = pandas.concat([cat_stroop,stroop_df])
     cat_decision = pandas.concat([cat_decision,decision_final_df])
     curr_subj+=1
-    
+    bonus_total +=bonus
     
 
 pandas.DataFrame.from_dict(subj_lookup, orient = 'index').to_csv('../Data/subj_lookup.csv')
