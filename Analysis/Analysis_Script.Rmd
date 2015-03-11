@@ -174,11 +174,10 @@ output: html_document
   decision_rs_mixed = glmer(stay ~ lag_FB * lag_transition + (lag_FB*lag_transition | id), family = binomial, data = all_subj_df, control=glmerControl(optimizer="bobyqa"))
   summary(decision_rs_mixed)
 
-  decision_rs_infreq = glmer(stay ~ lag_FB * lag_transition * IE_infreq  + (lag_FB*lag_transition | id), family = binomial, data = all_subj_df, control=glmerControl(optimizer="bobyqa"))
-  summary(decision_rs_infreq)  
-
-  decision_rs_freq = glmer(stay ~ lag_FB * lag_transition * IE_freq  + (lag_FB*lag_transition | id), family = binomial, data = all_subj_df, control=glmerControl(optimizer="bobyqa"))
-  summary(decision_rs_freq)
+  decision_rs_IE = glmer(stay ~ lag_FB * lag_transition * IE_freq + lag_FB * lag_transition * IE_infreq  + (lag_FB*lag_transition | id), family = binomial, data = all_subj_df, control=glmerControl(optimizer="bobyqa"))
+  summary(decision_rs_IE)
+  #linear contrast comparing the effects of the two separate IE
+  esticon(decision_rs_IE,c(0,0,0,0,0,0,0,0,0,0,1,-1))
 
   #extract model-based index to plot against IE
   individual_stats$r_M_based = coef(decision_rs_mixed)$id[,4]
@@ -226,7 +225,7 @@ output: html_document
 
   ggplot(data = decision_summary, aes(x = lag_transition, y = P_stay, fill = lag_transition)) + geom_bar(stat = 'identity') +
   geom_linerange(aes(ymin = P_stay-SE, ymax = P_stay+SE)) + facet_grid(.~lag_FB) + ylab("Stay Probability") + xlab("") + 
-  coord_cartesian(ylim = c(.3, .9)) + ggtitle("Actual Data") + theme_bw()
+  coord_cartesian(ylim = c(0, 1)) + ggtitle("Actual Data") + theme_bw()
   ggsave(file = '../Plots/Decision_Performancel.pdf')
 
   ggplot(data = decision_subj_summary, aes(x = lag_transition, y = P_stay, fill = lag_transition)) + geom_bar(stat = 'identity') +
