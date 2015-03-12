@@ -9,3 +9,4 @@ old_hit_modes/*
 settings.json
 Data/subj_lookup.csv
 hit_modes.json
+.boto

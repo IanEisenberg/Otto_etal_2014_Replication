@@ -9,6 +9,7 @@ output: html_document
   library(tidyr)
   library(lme4)
   library(doBy) 
+  library(psych)
 ```
 
 ```{r Load data}
@@ -130,8 +131,9 @@ output: html_document
     d_df_clean$ss_choice = as.factor(d_df_clean$ss_choice)
     d_df_clean$stay = d_df_clean$fs_choice == lag(d_df_clean$fs_choice)
     d_df_clean$stay = factor(d_df_clean$stay, levels = c(FALSE,TRUE), labels = c("Switch","Stay"))
+    d_df_clean$transition = factor(d_df_clean$transition, levels = c('rare','common'))
     d_df_clean$lag_transition = lag(d_df_clean$transition)
-    d_df_clean$FB = factor(d_df_clean$FB, levels = c(1,0), labels = c("Rewarded","Unrewarded"))
+    d_df_clean$FB = factor(d_df_clean$FB, levels = c(0,1), labels = c("Unrewarded","Rewarded"))
     d_df_clean$lag_FB = lag(d_df_clean$FB)
     #remove first row because we are interested in stayes
     d_df_clean=d_df_clean[-1,]
@@ -152,11 +154,13 @@ output: html_document
   
 ```
 
-```{r Group Analysis}
+
+```{r Exclude subjects, scale variables}
   #exclude subjects where P(stay)=1 or 0 on any condition (transition*reward)
   decision_subj_summary = group_by(all_subj_df, lag_transition, lag_FB, id) %>% summarise('P_stay' = mean(stay)-1) 
   exclude_subj = decision_subj_summary$id[decision_subj_summary$P_stay==1]
   all_subj_df = all_subj_df[!is.element(all_subj_df$id,exclude_subj),]
+  all_subj_stroop = all_subj_stroop[!is.element(all_subj_stroop$id,exclude_subj),]
   individual_stats = individual_stats[!is.element(individual_stats$id,exclude_subj),]
   row.names(individual_stats) = seq(nrow(individual_stats))
 
@@ -165,7 +169,14 @@ output: html_document
   all_subj_df$IE_infreq = scale(all_subj_df$IE_infreq)
   individual_stats$IE_freq = scale(individual_stats$IE_freq)
   individual_stats$IE_infreq = scale(individual_stats$IE_infreq) 
-  
+```
+
+```{r group stroop analysis}
+  stroop_rs_mixed = lmer(rt_logZ ~ congruent * type + repeat_stim + (congruent * type +repeat_stim| id), data = all_subj_stroop)
+  summary(stroop_rs_mixed)
+```
+
+``` {r Group Analysis}
   #model stay based on FB and stay probability
   decision_rs = glm(stay ~ lag_FB * lag_transition , family = binomial, data = all_subj_df)
   summary(decision_rs)
@@ -176,11 +187,18 @@ output: html_document
 
   decision_rs_IE = glmer(stay ~ lag_FB * lag_transition * IE_freq + lag_FB * lag_transition * IE_infreq  + (lag_FB*lag_transition | id), family = binomial, data = all_subj_df, control=glmerControl(optimizer="bobyqa"))
   summary(decision_rs_IE)
+
+  decision_rs_IE_fixed= glm(stay ~ lag_FB * lag_transition * IE_freq + lag_FB * lag_transition * IE_infreq  , family = binomial, data = all_subj_df)
+  summary(decision_rs_IE_fixed)
+
+
+
   #linear contrast comparing the effects of the two separate IE
   esticon(decision_rs_IE,c(0,0,0,0,0,0,0,0,0,0,1,-1))
 
   #extract model-based index to plot against IE
   individual_stats$r_M_based = coef(decision_rs_mixed)$id[,4]
+  individual_stats$r_M_Free= coef(decision_rs_mixed)$id[,2]
   individual_stats = gather(individual_stats,"condition","IE",starts_with("IE"))
   #extract P(stay) for transition x reward and confint
   inv_logit = function(x) {exp(x)/(1+exp(x))}
@@ -203,38 +221,42 @@ output: html_document
                 
 ```
 
-
 ```{r group decision plot }
   #Stroop, for confidence
   stroop_summary = group_by(all_subj_stroop, type, congruent) %>% summarise('meanRT' = mean(rt), 'sdRT' = sd(rt)/sqrt(n))
-  stroop_subj_summary = group_by(all_subj_stroop, type, congruent, id) %>% summarise('meanRT' = mean(rt))  
+  stroop_subj_summary = group_by(all_subj_stroop, type, congruent, id) %>% summarise('meanRT' = mean(rt)) 
+
 
   ggplot(data = stroop_summary, aes(x = congruent, y = meanRT, fill = congruent )) + geom_bar(stat = 'identity') + facet_grid(.~type) +
   geom_linerange(aes(ymin = meanRT-2*sdRT, ymax = meanRT+2*sdRT)) + theme_bw()
-  ggsave(file = '../Plots/Stroop.pdf')
+  ggsave(file = '../Plots/Stroop.tiff')
 
   ggplot(data = stroop_subj_summary, aes(x = congruent, y = meanRT, fill = congruent )) + geom_bar(stat = 'identity') + 
   facet_wrap(~id*type)  + theme_bw()
-  ggsave(file = '../Plots/Stroop_bySubj.pdf')
+  ggsave(file = '../Plots/Stroop_bySubj.tiff')
 
   #Decision plots
   ggplot(data = decision_summary, aes(x = lag_transition, y = P_stay_model, fill = lag_transition)) + geom_bar(stat = 'identity') +
   geom_linerange(aes(ymin = ci25, ymax = ci975)) + facet_grid(.~lag_FB) + ylab("Stay Probability") + xlab("") + 
   coord_cartesian(ylim = c(0, 1)) + ggtitle("Model Predictions") + theme_bw()
-  ggsave(file = '../Plots/Decision_Performance_Model.pdf')
+  ggsave(file = '../Plots/Decision_Performance_Model.tiff')
 
   ggplot(data = decision_summary, aes(x = lag_transition, y = P_stay, fill = lag_transition)) + geom_bar(stat = 'identity') +
   geom_linerange(aes(ymin = P_stay-SE, ymax = P_stay+SE)) + facet_grid(.~lag_FB) + ylab("Stay Probability") + xlab("") + 
   coord_cartesian(ylim = c(0, 1)) + ggtitle("Actual Data") + theme_bw()
-  ggsave(file = '../Plots/Decision_Performancel.pdf')
+  ggsave(file = '../Plots/Decision_Performance.tiff')
 
   ggplot(data = decision_subj_summary, aes(x = lag_transition, y = P_stay, fill = lag_transition)) + geom_bar(stat = 'identity') +
   facet_wrap(~id*lag_FB) + ylab("Stay Probability") + xlab("") + 
   coord_cartesian(ylim = c(0, 1)) + ggtitle("Actual Data by Subject") + theme_bw()
-  ggsave(file = '../Plots/Decision_Performancel_bySubj.pdf')
+  ggsave(file = '../Plots/Decision_Performance_bySubj.tiff')
 
-  ggplot(data = individual_stats, aes(x=IE, y = r_M_based, color = condition)) + geom_point() + geom_smooth(method = lm, alpha = .2) + xlab("Incongruency Effect (z score") + ylab("Model-based index") + theme_bw()
-  ggsave(file = '../Plots/Decision_vs_Stroop.pdf')
+  ggplot(data = individual_stats, aes(x=IE, y = r_M_based, color = condition)) + geom_point() + geom_smooth(method = lm, alpha = .2) + xlab("Incongruency Effect (z score)") + ylab("Model-based index") + theme_bw()
+  ggsave(file = '../Plots/Mbased_vs_Stroop.tiff')
+
+
+ggplot(data = individual_stats, aes(x=IE, y = r_M_Free, color = condition)) + geom_point() + geom_smooth(method = lm, alpha = .2) + xlab("Incongruency Effect (z score)") + ylab("Model-Free index") + theme_bw()
+  ggsave(file = '../Plots/Mfree_vs_Stroop.tiff')
 ```
 
 
