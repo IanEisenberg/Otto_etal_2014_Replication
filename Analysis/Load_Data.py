@@ -43,8 +43,8 @@ for file in files[1:]:
     catch_req = [('nothing' in s)* -1 or ('left' in s)*37 or ('right' in s)*39 for s in catch_df.stimulus]
     catch_acc = [catch_df.key_press[i] == catch_req[i] for i in catch_df.index]
     print(data['WorkerId'] + " failed " + str(6-sum(catch_acc)) + ' trials.')
-    print(subj_id + " RT: " + str(np.mean(decision_df.fs_RT)))
     if sum(catch_acc) < 5:
+        print('**REJECT**: ' + data['AssignmentId'])
         continue
         
     

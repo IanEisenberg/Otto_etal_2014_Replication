@@ -12,76 +12,6 @@ output: html_document
   library(psych)
 ```
 
-```{r Load data}
-  #stroop_df and decision_df
-  s_df = read.csv('../Data/007_stroop.csv')
-  d_df = read.csv('../Data/007_decision.csv')
-```
-
-```{r stroop analysis}
-  #remove practice
-  s_df = s_df[s_df$type %in% c('frequent','infrequent'),]
-  #convert logical strings to logical values
-  s_df$correct = s_df$correct == 'True'
-  s_df$congruent= s_df$congruent == 'True'
-  s_df$repeat_stim= s_df$repeat_stim == 'True'
-  #spot check that the frequencies are correct
-  print(group_by(s_df, type) %>% summarise('incongruent_freq' = mean(congruent)))
-  s_df_clean = s_df[s_df$correct == T,]
-  #log transform rt's to remove skew, and z-transform across all correct trials
-  s_df_clean$rt_logZ = scale(log(s_df_clean$rt))
-  stroop_rs = lm(rt_logZ ~ congruent * type, data = s_df_clean)
-  summary(stroop_rs)
-  #back out of Z/log transform to interpret
-  log_rt_mean = mean(log(s_df_clean$rt))
-  log_rt_sd = sd(log(s_df_clean$rt))
-  invert.logZ = function(x) {exp(x*log_rt_sd+log_rt_mean)}
-
-
-  IE_freq = stroop_rs$coefficients[2]
-  IE_infreq = stroop_rs$coefficients[2] + stroop_rs$coefficients[5]
-```
-
-```{r stroop plot}
-  RT_summary = group_by(s_df_clean, type, congruent) %>% summarise('meanRT' = mean(rt), 'sdRT' = sd(rt))
-  RT_summary = group_by(s_df_clean, type, congruent) %>% summarise('meanRT' = geometric.mean(rt), 'sdRT' = sd(rt))
-
-  ggplot(data = RT_summary, aes(x = congruent, y = meanRT, fill = congruent )) + geom_bar(stat = 'identity') + facet_grid(.~type) +
-  geom_linerange(aes(ymin = meanRT-sdRT, ymax = meanRT+sdRT))
-
-  ggplot(data = s_df_clean, aes(x = congruent, y = rt, color = congruent)) + geom_point(position = position_jitter(w = 0.1,h = 0)) + facet_grid(.~type)
-```
-
-
-```{r decision analysis}
-  #remove practice trials and only use trials where the subject actually responded
-  d_df_clean = d_df[d_df$type == 'task' & d_df$FB!=-1,]
-  #refactor dataframe
-  cat = sapply(d_df_clean, is.factor) 
-  d_df_clean[cat] = lapply(d_df_clean[cat], factor)
-  d_df_clean$id = factor(d_df_clean$id)
-  d_df_clean$fs_choice = as.factor(d_df_clean$fs_choice)
-  d_df_clean$ss_choice = as.factor(d_df_clean$ss_choice)
-  d_df_clean$stay = d_df_clean$fs_choice == lag(d_df_clean$fs_choice)
-  d_df_clean$stay = factor(d_df_clean$stay, levels = c(FALSE,TRUE), labels = c("Switch","Stay"))
-  d_df_clean$lag_transition = lag(d_df_clean$transition)
-  d_df_clean$FB = factor(d_df_clean$FB, levels = c(1,0), labels = c("Rewarded","Unrewarded"))
-  d_df_clean$lag_FB = lag(d_df_clean$FB)
-  #remove first row because we are interested in stayes
-  d_df_clean=d_df_clean[-1,]
-
-  decision_rs = glm(stay ~ lag_FB * lag_transition, family = binomial, data = d_df_clean)
-  summary(decision_rs)
-```
-
-```{r decision plot single subject}
-  #rt plots
-  ggplot( data = d_df_clean, aes(x=trial, y = ss_RT, color = 'blue')) + geom_point() + geom_point(aes(y = fs_RT, color = 'red'))
-
-  decision_summary = group_by(d_df_clean[-1,], lag_transition, lag_FB) %>% summarise('P_stay' = mean(stay)-1)
-
-  ggplot(data = decision_summary, aes(x = lag_FB, y = P_stay, fill = lag_FB)) + geom_bar(stat = 'identity') + facet_grid(.~lag_transition)
-```
 
 
 ```{r Individual analysis and concatenate subjects}
@@ -188,10 +118,14 @@ output: html_document
   decision_rs_IE = glmer(stay ~ lag_FB * lag_transition * IE_freq + lag_FB * lag_transition * IE_infreq  + (lag_FB*lag_transition | id), family = binomial, data = all_subj_df, control=glmerControl(optimizer="bobyqa"))
   summary(decision_rs_IE)
 
-  decision_rs_IE_fixed= glm(stay ~ lag_FB * lag_transition * IE_freq + lag_FB * lag_transition * IE_infreq  , family = binomial, data = all_subj_df)
-  summary(decision_rs_IE_fixed)
 
+  #make some toy data
+  decision_predict = expand.grid(lag_transition = c('rare','common'), lag_FB = c('Unrewarded', 'Rewarded'),
+                                 IE_freq = individual_stats[individual_stats$condition=='IE_freq',]$IE)
+  decision_predict = cbind(decision_predict, 'IE_infreq' =  individual_stats[individual_stats$condition=='IE_infreq',]$IE)
+  decision_predict$P_stay=inv_logit(predict(decision_rs_IE,decision_predict,re.form = ~0))
 
+  
 
   #linear contrast comparing the effects of the two separate IE
   esticon(decision_rs_IE,c(0,0,0,0,0,0,0,0,0,0,1,-1))
@@ -204,9 +138,9 @@ output: html_document
   inv_logit = function(x) {exp(x)/(1+exp(x))}
   ci = data.frame(confint(decision_rs_mixed, method = "Wald"))
   ci_by_condition = data.frame(matrix(c(ci['(Intercept)',],
-           ci['(Intercept)',] + ci['lag_FBUnrewarded',],
-           ci['(Intercept)',] + ci['lag_transitionrare',],
-           ci['(Intercept)',] + ci['lag_FBUnrewarded',] + ci['lag_transitionrare',] + ci['lag_FBUnrewarded:lag_transitionrare',]),
+           ci['(Intercept)',] + ci['lag_FBRewarded',],
+           ci['(Intercept)',] + ci['lag_transitioncommon',],
+           ci['(Intercept)',] + ci['lag_FBRewarded',] + ci['lag_transitioncommon',] + ci['lag_FBRewarded:lag_transitioncommon',]),
            4,byrow=T))
   ci_by_condition$ci25 = as.numeric(ci_by_condition$X1)
   ci_by_condition$ci975 = as.numeric(ci_by_condition$X2)
@@ -214,9 +148,9 @@ output: html_document
   ci_by_condition=data.frame(lapply(ci_by_condition,inv_logit))
   
   n=length(unique(all_subj_df$id))
-  decision_summary = group_by(decision_subj_summary,lag_transition, lag_FB) %>% summarise('P_stay' = mean(P_stay))
-  decision_summary$SE = sqrt(decision_summary$P_stay*(1-decision_summary$P_stay)/n)
-  decision_summary$P_stay_model =inv_logit(predict(decision_rs_mixed,decision_summary,re.form=~0))
+  decision_summary = group_by(decision_subj_summary,lag_transition, lag_FB) %>% summarise('P_stay_mean' = mean(P_stay), 'P_stay_SE' = sd(P_stay)/sqrt(n))
+  
+  decision_summary$P_stay_model_mean =inv_logit(predict(decision_rs_mixed,expand.grid(lag_FB = c('Unrewarded', 'Rewarded'),lag_transition = c('rare','common')),re.form=~0))
   decision_summary = cbind(decision_summary,ci_by_condition)
                 
 ```
@@ -236,14 +170,14 @@ output: html_document
   ggsave(file = '../Plots/Stroop_bySubj.tiff')
 
   #Decision plots
-  ggplot(data = decision_summary, aes(x = lag_transition, y = P_stay_model, fill = lag_transition)) + geom_bar(stat = 'identity') +
+  ggplot(data = decision_summary, aes(x = lag_transition, y = P_stay_model_mean, fill = lag_transition)) + geom_bar(stat = 'identity') +
   geom_linerange(aes(ymin = ci25, ymax = ci975)) + facet_grid(.~lag_FB) + ylab("Stay Probability") + xlab("") + 
   coord_cartesian(ylim = c(0, 1)) + ggtitle("Model Predictions") + theme_bw()
   ggsave(file = '../Plots/Decision_Performance_Model.tiff')
 
-  ggplot(data = decision_summary, aes(x = lag_transition, y = P_stay, fill = lag_transition)) + geom_bar(stat = 'identity') +
-  geom_linerange(aes(ymin = P_stay-SE, ymax = P_stay+SE)) + facet_grid(.~lag_FB) + ylab("Stay Probability") + xlab("") + 
-  coord_cartesian(ylim = c(0, 1)) + ggtitle("Actual Data") + theme_bw()
+  ggplot(data = decision_summary, aes(x = lag_transition, y = P_stay_mean, fill = lag_transition)) + geom_bar(stat = 'identity') +
+  geom_linerange(aes(ymin = P_stay_mean-P_stay_SE, ymax = P_stay_mean+P_stay_SE)) + facet_grid(.~lag_FB) + ylab("Stay Probability") + xlab("") + 
+  coord_cartesian(ylim = c(.5, 1)) + ggtitle("Actual Data") + theme_bw()
   ggsave(file = '../Plots/Decision_Performance.tiff')
 
   ggplot(data = decision_subj_summary, aes(x = lag_transition, y = P_stay, fill = lag_transition)) + geom_bar(stat = 'identity') +
@@ -253,6 +187,13 @@ output: html_document
 
   ggplot(data = individual_stats, aes(x=IE, y = r_M_based, color = condition)) + geom_point() + geom_smooth(method = lm, alpha = .2) + xlab("Incongruency Effect (z score)") + ylab("Model-based index") + theme_bw()
   ggsave(file = '../Plots/Mbased_vs_Stroop.tiff')
+  
+
+  ggplot(data = decision_predict, aes(x = IE_freq, y = P_stay, color = lag_transition)) + geom_point() + facet_wrap(~lag_FB) + geom_smooth(method = lm) + ggtitle('Model predictions for P(stay)') + theme_bw()
+  ggsave(file = '../Plots/Mbased_vs_freq.tiff')
+  ggplot(data = decision_predict, aes(x = IE_infreq, y = P_stay, color = lag_transition)) + geom_point() + facet_wrap(~lag_FB) + geom_smooth(method = lm) + ggtitle('Model predictions for P(stay)') + theme_bw()
+  ggsave(file = '../Plots/Mbased_vs_infreq.tiff')
+
 
 
 ggplot(data = individual_stats, aes(x=IE, y = r_M_Free, color = condition)) + geom_point() + geom_smooth(method = lm, alpha = .2) + xlab("Incongruency Effect (z score)") + ylab("Model-Free index") + theme_bw()
