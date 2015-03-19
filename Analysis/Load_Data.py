@@ -18,7 +18,7 @@ curr_subj = 1
 cat_stroop= pandas.DataFrame([])
 cat_decision = pandas.DataFrame([])
 bonus_total = 0
-for file in files[1:]:
+for file in files:
     subj_id = '%03d' % curr_subj
     subj_lookup[subj_id] = file    
     print('\n' + subj_id + ' : ' + file + '\n--------------')
