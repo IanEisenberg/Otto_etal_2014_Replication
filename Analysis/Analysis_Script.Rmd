@@ -171,7 +171,7 @@ output: html_document
   decision_rs_IE = glmer(stay ~ lag_FB * lag_transition * IE_freq + 
                          lag_FB * lag_transition * IE_infreq  + 
                          (lag_FB*lag_transition | id), 
-                          family = binomial, data = all_subj_df), 
+                          family = binomial, data = all_subj_df, 
                           control=glmerControl(optimizer="bobyqa"))
   summary(decision_rs_IE)
 
