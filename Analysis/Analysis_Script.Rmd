@@ -165,7 +165,6 @@ output: html_document
                             control=glmerControl(optimizer="bobyqa"))
   summary(decision_rs_mixed)
 
-
   #Full model with frequent and infrequent IE. Useful to compare
   #unique contributions of each IE variable
   decision_rs_IE = glmer(stay ~ lag_FB * lag_transition * IE_freq + 

@@ -1,0 +1,2 @@
+Time,Action,Data
+2015/03/12 11:32:10,Create,"{u'description': u'This is a dummy HIT for compensation on the decision study HIT', u'title': u'Get compensated for decision making study HIT', u'url': u'https://web.stanford.edu/~ieisenbe/Otto_etal_2014_Replication/dummy_hit/dummy_HIT.html', u'assignment_duration': u'1 hour', u'qualifications': {u'location': u'US', u'approval_percentage': 85}, u'frame_height': 450, u'keywords': u'decision, stroop, psychology, behavioral, study, experiment', u'auto_approval_delay': u'5 minutes', u'reward': 1.5}"

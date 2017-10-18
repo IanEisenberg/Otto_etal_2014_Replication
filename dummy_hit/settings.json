@@ -1,0 +1,14 @@
+{
+    "title":               "Get compensated for decision making study HIT",
+    "description":         "This is a dummy HIT for compensation on the decision study HIT",
+    "keywords":            "decision, stroop, psychology, behavioral, study, experiment",
+    "url":                 "https://web.stanford.edu/~ieisenbe/Otto_etal_2014_Replication/dummy_hit/dummy_HIT.html",
+    "frame_height":         450,
+    "assignment_duration":  "1 hour",
+    "auto_approval_delay":  "5 minutes",
+    "reward":               1.5,
+    "qualifications": {
+        "location": "US",
+        "approval_percentage": 85
+    }
+}

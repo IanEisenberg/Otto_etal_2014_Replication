@@ -1,0 +1,14 @@
+{
+    "title":               "A study about decision making",
+    "description":         "In this ~30 minute study you will perform two behavioral tasks and get a bonus based on performance.",
+    "keywords":            "decision, stroop, psychology, behavioral, study, experiment",
+    "url":                 "https://web.stanford.edu/~ieisenbe/Otto_etal_2014_Replication/preview.html",
+    "frame_height":         450,
+    "assignment_duration":  "1 hour",
+    "auto_approval_delay":  "2 days",
+    "reward":               1.5,
+    "qualifications": {
+        "location": "US",
+        "approval_percentage": 85
+    }
+}
